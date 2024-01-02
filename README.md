@@ -1,5 +1,6 @@
 ## DDPM: Denoising Diffusion Probabilistic Models模型在pytorch当中的实现
 ---
+> Forked from https://github.com/bubbliiiing/ddpm-pytorch. 
 
 ### 目录
 1. [所需环境 Environment](#所需环境)
