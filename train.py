@@ -15,6 +15,9 @@ from utils.dataloader import Diffusion_dataset_collate, DiffusionDataset
 from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config
 from utils.utils_fit import fit_one_epoch
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '0, 1'
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:5120"
+
 if __name__ == "__main__":
     #-------------------------------#
     #   是否使用Cuda
@@ -61,14 +64,14 @@ if __name__ == "__main__":
     #   图像大小的设置，如[128, 128]
     #   设置后在训练时Diffusion的图像看不出来，需要在预测时看单张图像。
     #---------------------------------------------------------------------#
-    input_shape     = (400, 400)
+    input_shape     = (256, 256)
     
     #------------------------------#
     #   训练参数设置
     #------------------------------#
     Init_Epoch      = 0
     Epoch           = 1000
-    batch_size      = 64
+    batch_size      = 4
     
     #------------------------------------------------------------------#
     #   其它训练参数：学习率、优化器、学习率下降有关
@@ -139,7 +142,7 @@ if __name__ == "__main__":
     #------------------------------------------#
     #   Diffusion网络
     #------------------------------------------#
-    diffusion_model = GaussianDiffusion(UNet(3, channel), input_shape, 3, betas=betas)
+    diffusion_model = GaussianDiffusion(UNet(1, channel), input_shape, 1, betas=betas)
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作
@@ -153,16 +156,6 @@ if __name__ == "__main__":
         pretrained_dict = {k: v for k, v in pretrained_dict.items() if np.shape(model_dict[k]) ==  np.shape(v)}
         model_dict.update(pretrained_dict)
         diffusion_model.load_state_dict(model_dict)
-
-    #----------------------#
-    #   记录Loss
-    #----------------------#
-    if local_rank == 0:
-        time_str        = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
-        log_dir         = os.path.join(save_dir, "loss_" + str(time_str))
-        loss_history    = LossHistory(log_dir, [diffusion_model], input_shape=input_shape)
-    else:
-        loss_history    = None
         
     #------------------------------------------------------------------#
     #   torch 1.2不支持amp，建议使用torch 1.7.1及以上正确使用fp16
@@ -195,6 +188,17 @@ if __name__ == "__main__":
             Init_lr = Init_lr, Min_lr = Min_lr, optimizer_type = optimizer_type, momentum = momentum, lr_decay_type = lr_decay_type, \
             save_period = save_period, save_dir = save_dir, num_workers = num_workers, num_train = num_train
             )
+    
+    #----------------------#
+    #   记录Loss
+    #----------------------#
+    if local_rank == 0:
+        time_str        = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
+        log_dir         = os.path.join(save_dir, "loss_" + str(time_str))
+        loss_history    = LossHistory(log_dir, [diffusion_model], input_shape=input_shape)
+    else:
+        loss_history    = None
+    
     #------------------------------------------------------#
     #   Init_Epoch为起始世代
     #   Epoch总训练世代

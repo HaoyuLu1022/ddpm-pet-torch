@@ -3,6 +3,7 @@ import os
 import torch
 import torch.distributed as dist
 from tqdm import tqdm
+import torchvision.transforms as transforms
 
 from utils.utils import get_lr, show_result
 
@@ -14,6 +15,9 @@ def fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimize
     if local_rank == 0:
         print('Start Train')
         pbar = tqdm(total=epoch_step,desc=f'Epoch {epoch + 1}/{Epoch}',postfix=dict,mininterval=0.3)
+    transform = transforms.Compose([
+        transforms.Resize((256, 256))
+    ])
     for iteration, images in enumerate(gen):
         if iteration >= epoch_step:
             break
@@ -21,24 +25,26 @@ def fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimize
         with torch.no_grad():
             if cuda:
                 images = images.cuda(local_rank)
-        
-        if not fp16:
-            optimizer.zero_grad()
-            diffusion_loss = torch.mean(diffusion_model_train(images))
-            diffusion_loss.backward()
-            optimizer.step()
-        else:
-            from torch.cuda.amp import autocast
-            optimizer.zero_grad()
-            with autocast():
-                diffusion_loss = torch.mean(diffusion_model_train(images))
-            #----------------------#
-            #   反向传播
-            #----------------------#
-            scaler.scale(diffusion_loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-        diffusion_model.update_ema()
+        images = torch.hsplit(images, images.shape[3])
+        for image in images:
+            image = transform(image)
+            if not fp16:
+                optimizer.zero_grad()
+                diffusion_loss = torch.mean(diffusion_model_train(image))
+                diffusion_loss.backward()
+                optimizer.step()
+            else:
+                from torch.cuda.amp import autocast
+                optimizer.zero_grad()
+                with autocast():
+                    diffusion_loss = torch.mean(diffusion_model_train(image))
+                #----------------------#
+                #   反向传播
+                #----------------------#
+                scaler.scale(diffusion_loss).backward()
+                scaler.step(optimizer)
+                scaler.update()
+            diffusion_model.update_ema()
 
         total_loss += diffusion_loss.item()
         if local_rank == 0:

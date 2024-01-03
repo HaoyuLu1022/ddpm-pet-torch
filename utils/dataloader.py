@@ -25,8 +25,8 @@ class DiffusionDataset(Dataset):
         # image   = np.transpose(preprocess_input(image), (2, 0, 1))
         input_shape = (400, 400, 400)
         image = np.fromfile(self.annotation_lines[index].split()[0], dtype=np.float32)
-        image = image.resize(input_shape)
-        return image
+        image = image.reshape(input_shape)
+        return image[:, :, 68:264]
 
 def Diffusion_dataset_collate(batch):
     images = []
