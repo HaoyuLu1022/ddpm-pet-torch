@@ -5,6 +5,7 @@ from functools import partial
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import os
 
 
 #---------------------------------------------------------#
@@ -49,6 +50,8 @@ def show_result(num_epoch, net, device):
 
     label = 'Epoch {0}'.format(num_epoch)
     fig.text(0.5, 0.04, label, ha='center')
+    if not os.path.exists('results/train_out'):
+        os.makedirs('results/train_out')
     plt.savefig("results/train_out/epoch_" + str(num_epoch) + "_results.png")
     plt.close('all')  #避免内存泄漏
 

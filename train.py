@@ -15,7 +15,8 @@ from utils.dataloader import Diffusion_dataset_collate, DiffusionDataset
 from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config
 from utils.utils_fit import fit_one_epoch
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0, 1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+# os.environ['NVIDIA_P2P_DISABLE'] = '1'
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:5120"
 
 if __name__ == "__main__":
@@ -48,7 +49,7 @@ if __name__ == "__main__":
     #   此处使用的是整个模型的权重，因此是在train.py进行加载的。
     #   如果想要让模型从0开始训练，则设置model_path = ''。
     #---------------------------------------------------------------------#
-    diffusion_model_path    = ""
+    diffusion_model_path    = "model_weights/Diffusion_Flower_mod.pth"
     #---------------------------------------------------------------------#
     #   卷积通道数的设置，显存不够时可以降低，如64
     #---------------------------------------------------------------------#
@@ -64,13 +65,13 @@ if __name__ == "__main__":
     #   图像大小的设置，如[128, 128]
     #   设置后在训练时Diffusion的图像看不出来，需要在预测时看单张图像。
     #---------------------------------------------------------------------#
-    input_shape     = (256, 256)
+    input_shape     = (128, 128)
     
     #------------------------------#
     #   训练参数设置
     #------------------------------#
     Init_Epoch      = 0
-    Epoch           = 1000
+    Epoch           = 500
     batch_size      = 4
     
     #------------------------------------------------------------------#
@@ -108,7 +109,7 @@ if __name__ == "__main__":
     #                   开启后会加快数据读取速度，但是会占用更多内存
     #                   内存较小的电脑可以设置为2或者0  
     #------------------------------------------------------------------#
-    num_workers         = 32
+    num_workers         = 22
     
     #------------------------------------------#
     #   获得图片路径
@@ -251,7 +252,7 @@ if __name__ == "__main__":
             set_optimizer_lr(optimizer, lr_scheduler_func, epoch)
             
             fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer, 
-                        epoch, epoch_step, gen, Epoch, Cuda, fp16, scaler, save_period, save_dir, local_rank)
+                        epoch, epoch_step, gen, Epoch, Cuda, fp16, scaler, save_period, save_dir, input_shape, local_rank)
 
             if distributed:
                 dist.barrier()

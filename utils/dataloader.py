@@ -25,8 +25,10 @@ class DiffusionDataset(Dataset):
         # image   = np.transpose(preprocess_input(image), (2, 0, 1))
         input_shape = (400, 400, 400)
         image = np.fromfile(self.annotation_lines[index].split()[0], dtype=np.float32)
-        image = image.reshape(input_shape)
-        return image[:, :, 68:264]
+        image = image.reshape(input_shape).transpose(1, 2, 0)
+        valid_img = image[18:(18+363), 18:(18+363), 68:332] # center 363 pixels along x and y axes, and center 264 slices along z axis
+        # standardization to rescale images ito [-1, 1]
+        return valid_img
 
 def Diffusion_dataset_collate(batch):
     images = []
