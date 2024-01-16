@@ -8,26 +8,21 @@ import torchvision.transforms as transforms
 from utils.utils import get_lr, show_result
 
 
-def fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer,
-                epoch, epoch_step, gen, Epoch, cuda, fp16, scaler, save_period, save_dir, input_shape, local_rank=0):
+def fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer,epoch, epoch_step, gen, Epoch, cuda, fp16, scaler, save_period, save_dir, local_rank=0):
     total_loss = 0
 
     if local_rank == 0:
         print('Start Train')
         pbar = tqdm(total=epoch_step,desc=f'Epoch {epoch + 1}/{Epoch}',postfix=dict,mininterval=0.3)
-    transform = transforms.Compose([
-        transforms.Resize(input_shape, antialias=False)
-    ])
     for iteration, images in enumerate(gen):
         if iteration >= epoch_step:
             break
-        images.permute(0, 3, 1, 2)
+        images.permute(0, 3, 1, 2) # move the z-axis direction to the second index
         with torch.no_grad():
             if cuda:
                 images = images.cuda(local_rank)
         images_set = torch.chunk(images, images.shape[1], dim=1)
         for image in images_set:
-            image = transform(image)
             if not fp16:
                 optimizer.zero_grad()
                 diffusion_loss = torch.mean(diffusion_model_train(image))

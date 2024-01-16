@@ -65,7 +65,8 @@ if __name__ == "__main__":
     #   图像大小的设置，如[128, 128]
     #   设置后在训练时Diffusion的图像看不出来，需要在预测时看单张图像。
     #---------------------------------------------------------------------#
-    input_shape     = (128, 128)
+    model_input_shape     = (128, 128)
+    img_shape = (256, 200, 200)
     
     #------------------------------#
     #   训练参数设置
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     #                   开启后会加快数据读取速度，但是会占用更多内存
     #                   内存较小的电脑可以设置为2或者0  
     #------------------------------------------------------------------#
-    num_workers         = 22
+    num_workers         = 14
     
     #------------------------------------------#
     #   获得图片路径
@@ -143,7 +144,7 @@ if __name__ == "__main__":
     #------------------------------------------#
     #   Diffusion网络
     #------------------------------------------#
-    diffusion_model = GaussianDiffusion(UNet(1, channel), input_shape, 1, betas=betas)
+    diffusion_model = GaussianDiffusion(UNet(1, channel), model_input_shape, 1, betas=betas)
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作
@@ -185,7 +186,7 @@ if __name__ == "__main__":
 
     if local_rank == 0:
         show_config(
-            input_shape = input_shape, Init_Epoch = Init_Epoch, Epoch = Epoch, batch_size = batch_size, \
+            model_input_shape = model_input_shape, Init_Epoch = Init_Epoch, Epoch = Epoch, batch_size = batch_size, \
             Init_lr = Init_lr, Min_lr = Min_lr, optimizer_type = optimizer_type, momentum = momentum, lr_decay_type = lr_decay_type, \
             save_period = save_period, save_dir = save_dir, num_workers = num_workers, num_train = num_train
             )
@@ -196,7 +197,7 @@ if __name__ == "__main__":
     if local_rank == 0:
         time_str        = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
         log_dir         = os.path.join(save_dir, "loss_" + str(time_str))
-        loss_history    = LossHistory(log_dir, [diffusion_model], input_shape=input_shape)
+        loss_history    = LossHistory(log_dir, [diffusion_model], input_shape=model_input_shape)
     else:
         loss_history    = None
     
@@ -228,7 +229,7 @@ if __name__ == "__main__":
         #---------------------------------------#
         #   构建数据集加载器。
         #---------------------------------------#
-        train_dataset   = DiffusionDataset(lines, input_shape)
+        train_dataset   = DiffusionDataset(lines, model_input_shape, img_shape)
         
         if distributed:
             train_sampler   = torch.utils.data.distributed.DistributedSampler(train_dataset, shuffle=True,)
@@ -251,8 +252,7 @@ if __name__ == "__main__":
                 
             set_optimizer_lr(optimizer, lr_scheduler_func, epoch)
             
-            fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer, 
-                        epoch, epoch_step, gen, Epoch, Cuda, fp16, scaler, save_period, save_dir, input_shape, local_rank)
+            fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer, epoch, epoch_step, gen, Epoch, Cuda, fp16, scaler, save_period, save_dir, local_rank)
 
             if distributed:
                 dist.barrier()

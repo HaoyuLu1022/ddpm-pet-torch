@@ -22,11 +22,22 @@ def cvtColor(image):
 #----------------------------------------#
 #   预处理训练图片
 #----------------------------------------#
-def preprocess_input(x):
-    x /= 255
-    x -= 0.5
-    x /= 0.5
-    return x
+# def preprocess_input(x):
+#     x /= 255
+#     x -= 0.5
+#     x /= 0.5
+#     return x
+def preprocess_input(x: np.ndarray) -> np.ndarray: 
+    maxn = 5e3
+    invalid_z_list = [k for k in range(x.shape[2]) if np.max(x[:, :, k]) > maxn]
+    x_rev = np.delete(x, invalid_z_list, 2)
+
+    x_rev /= 5e3
+    x_rev -= 0.5
+    x_rev /= 0.5
+
+    return x_rev
+
 
 def postprocess_output(x):
     x *= 0.5
