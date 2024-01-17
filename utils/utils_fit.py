@@ -8,7 +8,7 @@ import torchvision.transforms as transforms
 from utils.utils import get_lr, show_result
 
 
-def fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer,epoch, epoch_step, gen, Epoch, cuda, fp16, scaler, save_period, save_dir, local_rank=0):
+def fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer, epoch, epoch_step, gen, Epoch, cuda, fp16, scaler, save_period, save_dir, result_dir, local_rank=0):
     total_loss = 0
 
     if local_rank == 0:
@@ -56,7 +56,7 @@ def fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimize
         loss_history.append_loss(epoch + 1, total_loss = total_loss)
         
         print('Show_result:')
-        show_result(epoch + 1, diffusion_model, images.device)
+        show_result(epoch + 1, diffusion_model, images.device, result_dir)
         #----------------------------#
         #   每若干个世代保存一次
         #----------------------------#

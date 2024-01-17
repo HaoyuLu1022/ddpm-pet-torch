@@ -45,7 +45,7 @@ def postprocess_output(x):
     x *= 255
     return x
 
-def show_result(num_epoch, net, device):
+def show_result(num_epoch, net, device, result_dir):
     test_images = net.sample(4, device)
 
     size_figure_grid = 2
@@ -61,9 +61,9 @@ def show_result(num_epoch, net, device):
 
     label = 'Epoch {0}'.format(num_epoch)
     fig.text(0.5, 0.04, label, ha='center')
-    if not os.path.exists('results/train_out'):
-        os.makedirs('results/train_out')
-    plt.savefig("results/train_out/epoch_" + str(num_epoch) + "_results.png")
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
+    plt.savefig(f"{result_dir}/epoch_{str(num_epoch)}_results.png")
     plt.close('all')  #避免内存泄漏
 
 def show_config(**kwargs):

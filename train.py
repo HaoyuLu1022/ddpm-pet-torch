@@ -7,6 +7,7 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from sklearn.model_selection import train_test_split
 
 from nets import (GaussianDiffusion, UNet, generate_cosine_schedule,
                   generate_linear_schedule)
@@ -73,7 +74,7 @@ if __name__ == "__main__":
     #------------------------------#
     Init_Epoch      = 0
     Epoch           = 500
-    batch_size      = 4
+    batch_size      = 8
     
     #------------------------------------------------------------------#
     #   其它训练参数：学习率、优化器、学习率下降有关
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     #   Min_lr          模型的最小学习率，默认为最大学习率的0.01
     #------------------------------------------------------------------#
     Init_lr             = 2e-4
-    Min_lr              = Init_lr * 0.01
+    Min_lr              = 1e-7
     #------------------------------------------------------------------#
     #   optimizer_type  使用到的优化器种类，可选的有adam、adamw
     #   momentum        优化器内部使用到的momentum参数
@@ -96,7 +97,7 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   lr_decay_type   使用到的学习率下降方式，可选的有step、cos
     #------------------------------------------------------------------#
-    lr_decay_type       = "cos"
+    lr_decay_type       = "step"
     #------------------------------------------------------------------#
     #   save_period     多少个epoch保存一次权值
     #------------------------------------------------------------------#
@@ -147,7 +148,7 @@ if __name__ == "__main__":
     diffusion_model = GaussianDiffusion(UNet(1, channel), model_input_shape, 1, betas=betas)
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
-    # 2. 对模型的第一层各通道参数进行均值操作
+    # 2. 对模型的第一层各通道参数进行均值操作 <- 
 
     #------------------------------------------#
     #   将训练好的模型重新载入
@@ -186,9 +187,7 @@ if __name__ == "__main__":
 
     if local_rank == 0:
         show_config(
-            model_input_shape = model_input_shape, Init_Epoch = Init_Epoch, Epoch = Epoch, batch_size = batch_size, \
-            Init_lr = Init_lr, Min_lr = Min_lr, optimizer_type = optimizer_type, momentum = momentum, lr_decay_type = lr_decay_type, \
-            save_period = save_period, save_dir = save_dir, num_workers = num_workers, num_train = num_train
+            model_input_shape = model_input_shape, Init_Epoch = Init_Epoch, Epoch = Epoch, batch_size = batch_size, Init_lr = Init_lr, Min_lr = Min_lr, optimizer_type = optimizer_type, momentum = momentum, lr_decay_type = lr_decay_type, save_period = save_period, save_dir = save_dir, num_workers = num_workers, num_train = num_train
             )
     
     #----------------------#
@@ -198,6 +197,9 @@ if __name__ == "__main__":
         time_str        = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
         log_dir         = os.path.join(save_dir, "loss_" + str(time_str))
         loss_history    = LossHistory(log_dir, [diffusion_model], input_shape=model_input_shape)
+        result_dir = f"results/train_out_{str(time_str)}"
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
     else:
         loss_history    = None
     
@@ -252,7 +254,7 @@ if __name__ == "__main__":
                 
             set_optimizer_lr(optimizer, lr_scheduler_func, epoch)
             
-            fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer, epoch, epoch_step, gen, Epoch, Cuda, fp16, scaler, save_period, save_dir, local_rank)
+            fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer, epoch, epoch_step, gen, Epoch, Cuda, fp16, scaler, save_period, log_dir, result_dir, local_rank)
 
             if distributed:
                 dist.barrier()
