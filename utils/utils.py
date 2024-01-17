@@ -82,7 +82,7 @@ def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
     
-def get_lr_scheduler(lr_decay_type, lr, min_lr, total_iters, warmup_iters_ratio = 0.05, warmup_lr_ratio = 0.1, no_aug_iter_ratio = 0.05, step_num = 10):
+def get_lr_scheduler(lr_decay_type, lr, min_lr, total_iters, warmup_iters_ratio = 0.05, warmup_lr_ratio = 0.1, no_aug_iter_ratio = 0.05, step_num = 10, power=8.0):
     def yolox_warm_cos_lr(lr, min_lr, total_iters, warmup_total_iters, warmup_lr_start, no_aug_iter, iters):
         if iters <= warmup_total_iters:
             # lr = (lr - warmup_lr_start) * iters / float(warmup_total_iters) + warmup_lr_start
@@ -93,6 +93,10 @@ def get_lr_scheduler(lr_decay_type, lr, min_lr, total_iters, warmup_iters_ratio 
             lr = min_lr + 0.5 * (lr - min_lr) * (
                 1.0 + math.cos(math.pi* (iters - warmup_total_iters) / (total_iters - warmup_total_iters - no_aug_iter))
             )
+        return lr
+
+    def poly_lr(base_lr, num_epochs, iters):
+        lr = base_lr * (1-iters/num_epochs)**power
         return lr
 
     def step_lr(lr, decay_rate, step_size, iters):
@@ -107,6 +111,8 @@ def get_lr_scheduler(lr_decay_type, lr, min_lr, total_iters, warmup_iters_ratio 
         warmup_lr_start     = max(warmup_lr_ratio * lr, 1e-6)
         no_aug_iter         = min(max(no_aug_iter_ratio * total_iters, 1), 15)
         func = partial(yolox_warm_cos_lr ,lr, min_lr, total_iters, warmup_total_iters, warmup_lr_start, no_aug_iter)
+    elif lr_decay_type == "poly":
+        func = partial(poly_lr, lr, total_iters)
     else:
         decay_rate  = (min_lr / lr) ** (1 / (step_num - 1))
         step_size   = total_iters / step_num
