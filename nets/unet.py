@@ -4,6 +4,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+# from guide import GuidedResnetBlocWithAttn
+
 class SiLU(nn.Module):  
     # SiLU激活函数
     @staticmethod
@@ -91,9 +93,9 @@ class AttentionBlock(nn.Module):
         b, c, h, w  = x.shape
         q, k, v     = torch.split(self.to_qkv(self.norm(x)), self.in_channels, dim=1)
 
-        q = q.permute(0, 2, 3, 1).view(b, h * w, c)
-        k = k.view(b, c, h * w)
-        v = v.permute(0, 2, 3, 1).view(b, h * w, c)
+        q = q.permute(0, 2, 3, 1).view(b, h * w, c).contiguous()
+        k = k.view(b, c, h * w).contiguous()
+        v = v.permute(0, 2, 3, 1).view(b, h * w, c).contiguous()
 
         dot_products = torch.bmm(q, k) * (c ** (-0.5))
         assert dot_products.shape == (b, h * w, h * w)
@@ -101,7 +103,7 @@ class AttentionBlock(nn.Module):
         attention   = torch.softmax(dot_products, dim=-1)
         out         = torch.bmm(attention, v)
         assert out.shape == (b, h * w, c)
-        out         = out.view(b, h, w, c).permute(0, 3, 1, 2)
+        out         = out.view(b, h, w, c).permute(0, 3, 1, 2).contiguous()
 
         return self.to_out(out) + x
     
@@ -110,8 +112,7 @@ class AttentionBlock(nn.Module):
 #------------------------------------------#
 class ResidualBlock(nn.Module):
     def __init__(
-        self, in_channels, out_channels, dropout, time_emb_dim=None, num_classes=None, activation=SiLU(),
-        norm="gn", num_groups=32, use_attention=False,
+        self, in_channels, out_channels, dropout, time_emb_dim=None, num_classes=None, activation=SiLU(), norm="gn", num_groups=32, use_attention=False,
     ):
         super().__init__()
 
@@ -156,15 +157,78 @@ class ResidualBlock(nn.Module):
         # 最后做个Attention
         out = self.attention(out)
         return out
+    
+
+class GuidedResidualBlock(nn.Module):
+    def __init__(
+        self, in_channels, out_channels, guide_channels, dropout, time_emb_dim=None, num_classes=None, activation=SiLU(), norm="gn", num_groups=32, use_attention=False,
+    ):
+        super().__init__()
+
+        self.activation = activation
+
+        self.norm_1 = get_norm(norm, in_channels, num_groups)
+        self.conv_1 = nn.Conv2d(in_channels, out_channels, 3, padding=1)
+
+        self.norm_2 = get_norm(norm, out_channels, num_groups)
+        self.conv_2 = nn.Sequential(
+            nn.Dropout(p=dropout), 
+            nn.Conv2d(out_channels, out_channels, 3, padding=1),
+        )
+
+        self.guided_conv1 = nn.Conv2d(guide_channels, in_channels, 1)
+        self.guided_conv2 = nn.Conv2d(guide_channels, out_channels, 1)
+        self.guided_conv_aff1 = nn.Conv2d(in_channels*2, in_channels, 1)
+        self.guided_conv_aff2 = nn.Conv2d(out_channels*2, out_channels, 1)
+
+        self.time_bias  = nn.Linear(time_emb_dim, out_channels) if time_emb_dim is not None else None
+        self.class_bias = nn.Embedding(num_classes, out_channels) if num_classes is not None else None
+
+        self.residual_connection    = nn.Conv2d(in_channels, out_channels, 1) if in_channels != out_channels else nn.Identity()
+        self.attention              = nn.Identity() if not use_attention else AttentionBlock(out_channels, norm, num_groups)
+    
+    def forward(self, x, ax_feature, time_emb=None, y=None):
+        if ax_feature != None: 
+            if ax_feature.shape[2] != x.shape[2]:
+                ax_feature = F.interpolate(ax_feature, size=(x.shape[2], x.shape[3]), mode='bilinear')
+            ax_feature_copy = ax_feature
+            ax_feature = self.guided_conv1(ax_feature_copy)
+            x = torch.cat([x, ax_feature], dim=1)
+            x = self.guided_conv_aff1(x)
+
+            out = self.activation(self.norm_1(x))
+            # 第一个卷积
+            out = self.conv_1(out)
+            
+            # 对时间time_emb做一个全连接，施加在通道上
+            if self.time_bias is not None:
+                if time_emb is None:
+                    raise ValueError("time conditioning was specified but time_emb is not passed")
+                out += self.time_bias(self.activation(time_emb))[:, :, None, None]
+
+            # 对种类y_emb做一个全连接，施加在通道上
+            if self.class_bias is not None:
+                if y is None:
+                    raise ValueError("class conditioning was specified but y is not passed")
+
+                out += self.class_bias(y)[:, :, None, None]
+
+            ax_feature = self.guided_conv2(ax_feature_copy)
+            out = torch.cat([out, ax_feature], dim=1)
+            out = self.guided_conv_aff2(out)
+            out = self.activation(self.norm_2(out))
+            # 第二个卷积+残差边
+            out = self.conv_2(out) + self.residual_connection(x)
+            # 最后做个Attention
+            out = self.attention(out)
+            return out
 
 #------------------------------------------#
 #   Unet模型
 #------------------------------------------#
 class UNet(nn.Module):
     def __init__(
-        self, img_channels, base_channels=128, channel_mults=(1, 2, 4, 8),
-        num_res_blocks=3, time_emb_dim=128 * 4, time_emb_scale=1.0, num_classes=None, activation=SiLU(),
-        dropout=0.1, attention_resolutions=(1,), norm="gn", num_groups=32, initial_pad=0,
+        self, img_channels: int, condition: bool = False, guide_channels: int = 0, base_channels=128, channel_mults=(1, 2, 4, 8), num_res_blocks=3, time_emb_dim=128 * 4, time_emb_scale=1.0, num_classes=None, activation=SiLU(), dropout=0.1, attention_resolutions=(1,), norm="gn", num_groups=32, initial_pad=0,
     ):
         super().__init__()
         # 使用到的激活函数，一般为SILU
@@ -173,6 +237,8 @@ class UNet(nn.Module):
         self.initial_pad = initial_pad
         # 需要去区分的类别数
         self.num_classes = num_classes
+
+        self.condition = condition
         
         # 对时间轴输入的全连接层
         self.time_mlp = nn.Sequential(
@@ -198,12 +264,14 @@ class UNet(nn.Module):
             out_channels = base_channels * mult
             for _ in range(num_res_blocks):
                 self.downs.append(
-                    ResidualBlock(
+                    GuidedResidualBlock(
+                        now_channels, out_channels, guide_channels, dropout, time_emb_dim=time_emb_dim, num_classes=num_classes, activation=activation, norm=norm, num_groups=num_groups, use_attention=i in attention_resolutions,
+                    ) if self.condition else ResidualBlock(
                         now_channels, out_channels, dropout,
                         time_emb_dim=time_emb_dim, num_classes=num_classes, activation=activation,
                         norm=norm, num_groups=num_groups, use_attention=i in attention_resolutions,
                     )
-                )
+                ) 
                 now_channels = out_channels
                 channels.append(now_channels)
             
@@ -214,15 +282,22 @@ class UNet(nn.Module):
         # 可以看作是特征整合，中间的一个特征提取模块
         self.mid = nn.ModuleList(
             [
-                ResidualBlock(
-                    now_channels, now_channels, dropout,
-                    time_emb_dim=time_emb_dim, num_classes=num_classes, activation=activation,
+                GuidedResidualBlock(
+                    now_channels, now_channels, guide_channels, dropout,time_emb_dim=time_emb_dim, num_classes=num_classes, activation=activation,
                     norm=norm, num_groups=num_groups, use_attention=True,
+                ),
+                GuidedResidualBlock(
+                    now_channels, now_channels, guide_channels, dropout, time_emb_dim=time_emb_dim, num_classes=num_classes, activation=activation, norm=norm, num_groups=num_groups, use_attention=False,
+                ),
+            ]
+        ) if self.condition else nn.ModuleList(
+            [
+                ResidualBlock(
+                    now_channels, now_channels, dropout, time_emb_dim=time_emb_dim, num_classes=num_classes, activation=activation, norm=norm, num_groups=num_groups, use_attention=True,
                 ),
                 ResidualBlock(
                     now_channels, now_channels, dropout,
-                    time_emb_dim=time_emb_dim, num_classes=num_classes, activation=activation, 
-                    norm=norm, num_groups=num_groups, use_attention=False,
+                    time_emb_dim=time_emb_dim, num_classes=num_classes, activation=activation, norm=norm, num_groups=num_groups, use_attention=False,
                 ),
             ]
         )
@@ -247,7 +322,7 @@ class UNet(nn.Module):
         self.out_norm = get_norm(norm, base_channels, num_groups)
         self.out_conv = nn.Conv2d(base_channels, img_channels, 3, padding=1)
     
-    def forward(self, x, time=None, y=None):
+    def forward(self, x, time=None, y=None, ax_feature=None):
         # 是否对输入进行padding
         ip = self.initial_pad
         if ip != 0:
@@ -270,12 +345,24 @@ class UNet(nn.Module):
         # skips用于存放下采样的中间层
         skips = [x]
         for layer in self.downs:
-            x = layer(x, time_emb, y)
+            if isinstance(layer, ResidualBlock): 
+                x = layer(x, time_emb, y)
+            elif isinstance(layer, GuidedResidualBlock) and ax_feature is not None:
+                x = layer(x, ax_feature, time_emb, y)
+            else: 
+                x = layer(x, time_emb, y)
+
+            # else:
+            #     x = layer(x)
             skips.append(x)
-        
         # 特征整合与提取
         for layer in self.mid:
-            x = layer(x, time_emb, y)
+            if isinstance(layer, ResidualBlock): 
+                x = layer(x, time_emb, y)
+            elif isinstance(layer, GuidedResidualBlock) and ax_feature is not None:
+                x = layer(x, ax_feature, time_emb, y)
+            # else:
+            #     x = layer(x)
         
         # 上采样并进行特征融合
         for layer in self.ups:

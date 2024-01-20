@@ -7,13 +7,14 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from sklearn.model_selection import train_test_split
+import scipy.ndimage as ndimage
+from numpy.lib.stride_tricks import sliding_window_view
 
 from nets import (GaussianDiffusion, UNet, generate_cosine_schedule,
                   generate_linear_schedule)
 from utils.callbacks import LossHistory
 from utils.dataloader import Diffusion_dataset_collate, DiffusionDataset
-from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config
+from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config, preprocess_input
 from utils.utils_fit import fit_one_epoch
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
@@ -74,7 +75,7 @@ if __name__ == "__main__":
     #------------------------------#
     Init_Epoch      = 0
     Epoch           = 500
-    batch_size      = 8
+    batch_size      = 6
     
     #------------------------------------------------------------------#
     #   其它训练参数：学习率、优化器、学习率下降有关
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     #   Init_lr         模型的最大学习率
     #   Min_lr          模型的最小学习率，默认为最大学习率的0.01
     #------------------------------------------------------------------#
-    Init_lr             = 2e-4
+    Init_lr             = 1e-5
     Min_lr              = 1e-7
     #------------------------------------------------------------------#
     #   optimizer_type  使用到的优化器种类，可选的有adam、adamw
@@ -111,12 +112,12 @@ if __name__ == "__main__":
     #                   开启后会加快数据读取速度，但是会占用更多内存
     #                   内存较小的电脑可以设置为2或者0  
     #------------------------------------------------------------------#
-    num_workers         = 14
+    num_workers         = 8
     
     #------------------------------------------#
     #   获得图片路径
     #------------------------------------------#
-    annotation_path = "train_lines.txt"
+    annotation_path = "train_slices.txt"
 
     #------------------------------------------------------#
     #   设置用到的显卡
@@ -145,7 +146,7 @@ if __name__ == "__main__":
     #------------------------------------------#
     #   Diffusion网络
     #------------------------------------------#
-    diffusion_model = GaussianDiffusion(UNet(1, channel), model_input_shape, 1, betas=betas)
+    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=32, base_channels=channel), model_input_shape, 1, betas=betas)
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作 <- 
@@ -193,15 +194,21 @@ if __name__ == "__main__":
     #----------------------#
     #   记录Loss
     #----------------------#
-    if local_rank == 0:
-        time_str        = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
-        log_dir         = os.path.join(save_dir, "loss_" + str(time_str))
-        loss_history    = LossHistory(log_dir, [diffusion_model], input_shape=model_input_shape)
-        result_dir = f"results/train_out_{str(time_str)}"
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-    else:
-        loss_history    = None
+    # if local_rank == 0:
+    #     time_str        = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
+    #     log_dir         = os.path.join(save_dir, "loss_" + str(time_str))
+    #     loss_history    = LossHistory(log_dir, [diffusion_model], input_shape=model_input_shape)
+    #     result_dir = f"results/train_out_{str(time_str)}"
+    #     if not os.path.exists(result_dir):
+    #         os.makedirs(result_dir)
+    # else:
+    #     loss_history    = None
+    time_str        = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
+    log_dir         = os.path.join(save_dir, "loss_" + str(time_str))
+    loss_history    = LossHistory(log_dir, [diffusion_model], input_shape=model_input_shape)
+    result_dir = f"results/train_out_{str(time_str)}"
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir) 
     
     #------------------------------------------------------#
     #   Init_Epoch为起始世代
@@ -241,8 +248,33 @@ if __name__ == "__main__":
             train_sampler   = None
             shuffle         = True
     
-        gen             = DataLoader(train_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers, pin_memory=True,
-                                    drop_last=True, collate_fn=Diffusion_dataset_collate, sampler=train_sampler)
+        gen             = DataLoader(train_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers, pin_memory=True, drop_last=False, collate_fn=Diffusion_dataset_collate, sampler=train_sampler, prefetch_factor=2)
+
+        target_shape = (128, 128, 128)
+        test_path = 'test_lines.txt'
+        with open(test_path) as f:
+            lines = f.readlines()
+        test_full_dir, test_low_dir = lines[0].split()
+        test_full = np.fromfile(test_full_dir, dtype=np.float32)
+        test_full, invalid_z_list = preprocess_input(test_full.reshape(img_shape))
+        test_full = ndimage.zoom(test_full, [t_shape/img_shape for t_shape, img_shape in zip(target_shape, test_full.shape)])
+        test_full_list = np.split(test_full, test_full.shape[0], axis=0)
+        test_full_list = [test_full_list[i] for i in range(0, len(test_full_list), len(test_full_list)//4)]
+
+        test_low = np.fromfile(test_low_dir, dtype=np.float32).reshape(img_shape)
+        test_low = np.delete(test_low, invalid_z_list, 0)
+        test_low /= 5e3
+        test_low -= 0.5
+        test_low /= 0.5
+        test_low = ndimage.zoom(test_low, [t_shape/img_shape for t_shape, img_shape in zip(target_shape, test_low.shape)])
+        test_low_list = sliding_window_view(test_low, window_shape=32, axis=0).transpose(0, 3, 1, 2)
+        test_low_list = np.concatenate([np.repeat(np.expand_dims(test_low_list[0, :, :, :], axis=0), 16, axis=0), test_low_list, np.repeat(np.expand_dims(test_low_list[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
+        test_low_list = [test_low_list[i, :, :, :] for i in range(len(test_low_list))]
+        test_low = torch.stack([torch.Tensor(test_low_list[i]) for i in range(0, len(test_low_list), len(test_low_list)//4)], dim=0)
+        test_slices_dict = {
+            "fulldose": test_full_list, 
+            "lowdose": test_low
+        }
 
         #---------------------------------------#
         #   开始模型训练
@@ -254,7 +286,7 @@ if __name__ == "__main__":
                 
             set_optimizer_lr(optimizer, lr_scheduler_func, epoch)
             
-            fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer, epoch, epoch_step, gen, Epoch, Cuda, fp16, scaler, save_period, log_dir, result_dir, local_rank)
+            fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer, epoch, epoch_step, gen, Epoch, Cuda, fp16, scaler, save_period, log_dir, result_dir, test_slices_dict, local_rank)
 
             if distributed:
                 dist.barrier()

@@ -83,20 +83,20 @@ class GaussianDiffusion(nn.Module):
                 self.ema.update_model_average(self.ema_model, self.model)
 
     @torch.no_grad()
-    def remove_noise(self, x, t, y, use_ema=True):
+    def remove_noise(self, x, t, y, use_ema=True, ax_feature=None):
         if use_ema:
             return (
-                (x - extract(self.remove_noise_coeff, t, x.shape) * self.ema_model(x, t, y)) *
+                (x - extract(self.remove_noise_coeff, t, x.shape) * self.ema_model(x, t, y, ax_feature)) *
                 extract(self.reciprocal_sqrt_alphas, t, x.shape)
             )
         else:
             return (
-                (x - extract(self.remove_noise_coeff, t, x.shape) * self.model(x, t, y)) *
+                (x - extract(self.remove_noise_coeff, t, x.shape) * self.model(x, t, y, ax_feature)) *
                 extract(self.reciprocal_sqrt_alphas, t, x.shape)
             )
 
     @torch.no_grad()
-    def sample(self, batch_size, device, y=None, use_ema=True):
+    def sample(self, batch_size, device, y=None, use_ema=True, ax_feature=None):
         if y is not None and batch_size != len(y):
             raise ValueError("sample batch size different from length of given y")
 
@@ -104,7 +104,7 @@ class GaussianDiffusion(nn.Module):
         
         for t in range(self.num_timesteps - 1, -1, -1):
             t_batch = torch.tensor([t], device=device).repeat(batch_size)
-            x = self.remove_noise(x, t_batch, y, use_ema)
+            x = self.remove_noise(x, t_batch, y, use_ema, ax_feature)
 
             if t > 0:
                 x += extract(self.sigma, t_batch, x.shape) * torch.randn_like(x)
@@ -136,12 +136,12 @@ class GaussianDiffusion(nn.Module):
             extract(self.sqrt_one_minus_alphas_cumprod, t, x.shape) * noise
         )   
 
-    def get_losses(self, x, t, y):
+    def get_losses(self, x, t, y, ax_feature):
         # x, noise [batch_size, 3, 64, 64]
         noise           = torch.randn_like(x)
 
         perturbed_x     = self.perturb_x(x, t, noise)
-        estimated_noise = self.model(perturbed_x, t, y)
+        estimated_noise = self.model(perturbed_x, t, y, ax_feature)
 
         if self.loss_type == "l1":
             loss = F.l1_loss(estimated_noise, noise)
@@ -149,7 +149,7 @@ class GaussianDiffusion(nn.Module):
             loss = F.mse_loss(estimated_noise, noise)
         return loss
 
-    def forward(self, x, y=None):
+    def forward(self, x, y=None, ax_feature=None):
         b, c, h, w  = x.shape
         device      = x.device
 
@@ -159,7 +159,7 @@ class GaussianDiffusion(nn.Module):
             raise ValueError("image width does not match diffusion parameters")
         
         t = torch.randint(0, self.num_timesteps, (b,), device=device)
-        return self.get_losses(x, t, y)
+        return self.get_losses(x, t, y, ax_feature)
 
 def generate_cosine_schedule(T, s=0.008):
     def f(t, T):

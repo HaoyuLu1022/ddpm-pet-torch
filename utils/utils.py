@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import os
+from typing import Tuple, List
 
+maxn = 5e3
 
 #---------------------------------------------------------#
 #   将图像转换成RGB图像，防止灰度图在预测时报错。
@@ -27,40 +29,51 @@ def cvtColor(image):
 #     x -= 0.5
 #     x /= 0.5
 #     return x
-def preprocess_input(x: np.ndarray) -> np.ndarray: 
-    maxn = 5e3
-    invalid_z_list = [k for k in range(x.shape[2]) if np.max(x[:, :, k]) > maxn]
-    x_rev = np.delete(x, invalid_z_list, 2)
+def preprocess_input(x: np.ndarray) -> Tuple[np.ndarray, List]: 
+    invalid_z_list = [k for k in range(x.shape[0]) if np.max(x[k, :, :]) > maxn]
+    x_rev = np.delete(x, invalid_z_list, 0)
 
-    x_rev /= 5e3
+    x_rev /= maxn
     x_rev -= 0.5
     x_rev /= 0.5
 
-    return x_rev
+    return x_rev, invalid_z_list
 
 
 def postprocess_output(x):
     x *= 0.5
     x += 0.5
-    x *= 255
+    x *= maxn
     return x
 
-def show_result(num_epoch, net, device, result_dir):
-    test_images = net.sample(4, device)
+def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
+    test_images = net.sample(len(ax_feature), device, ax_feature=ax_feature)
 
-    size_figure_grid = 2
-    fig, ax = plt.subplots(size_figure_grid, size_figure_grid, figsize=(5, 5))
-    for i, j in itertools.product(range(size_figure_grid), range(size_figure_grid)):
+    size_figure_grid_r = 3
+    size_figure_grid_c = 4
+    fig, ax = plt.subplots(size_figure_grid_r, size_figure_grid_c, figsize=(10, 10), constrained_layout=True)
+    low_imgs = [
+        postprocess_output(np.expand_dims((ax_feature[0][15]).cpu().data.numpy(), axis=0).transpose(2, 1, 0)), 
+        postprocess_output(np.expand_dims(ax_feature[1][15].cpu().data.numpy(),axis=0).transpose(2, 1, 0)),
+        postprocess_output(np.expand_dims(ax_feature[2][15].cpu().data.numpy(), axis=0).transpose(2, 1, 0)),
+        postprocess_output(np.expand_dims(ax_feature[3][15].cpu().data.numpy(), axis=0).transpose(2, 1, 0)),]
+    for i, j in itertools.product(range(size_figure_grid_r), range(size_figure_grid_c)):
         ax[i, j].get_xaxis().set_visible(False)
         ax[i, j].get_yaxis().set_visible(False)
-    for k in range(2 * 2):
-        i = k // 2
-        j = k % 2
-        ax[i, j].cla()
-        ax[i, j].imshow(np.uint8(postprocess_output(test_images[k].cpu().data.numpy().transpose(1, 2, 0))))
+    for k in range(size_figure_grid_c):
+        ax[0, k].cla()
+        ax[0, k].imshow(low_imgs[k], cmap='gray', origin='lower')
+    for k in range(size_figure_grid_c):
+        # i = k // size_figure_grid_c
+        # j = k % size_figure_grid_c
+        ax[1, k].cla()
+        ax[1, k].imshow(postprocess_output(test_images[k].cpu().data.numpy().transpose(2, 1, 0)), cmap='gray', origin='lower')
+    for k in range(size_figure_grid_c): 
+        ax[2, k].cla()
+        ax[2, k].imshow(postprocess_output(gt[k].transpose(2, 1, 0)), cmap='gray', origin='lower')
 
-    label = 'Epoch {0}'.format(num_epoch)
-    fig.text(0.5, 0.04, label, ha='center')
+    # label = 'Epoch {0}'.format(num_epoch)
+    # fig.text(0.5, -0.5, label, ha='center')
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
     plt.savefig(f"{result_dir}/epoch_{str(num_epoch)}_results.png")
@@ -95,16 +108,18 @@ def get_lr_scheduler(lr_decay_type, lr, min_lr, total_iters, warmup_iters_ratio 
             )
         return lr
 
-    def poly_lr(base_lr, num_epochs, iters):
-        lr = base_lr * (1-iters/num_epochs)**power
-        return lr
-
     def step_lr(lr, decay_rate, step_size, iters):
         if step_size < 1:
             raise ValueError("step_size must above 1.")
         n       = iters // step_size
         out_lr  = lr * decay_rate ** n
         return out_lr
+    
+    def poly_lr(base_lr, num_epochs, iters):
+        lr = base_lr * (1-iters/num_epochs)**power
+        # for param_group in optimizer.param_groups:
+        #     param_group['lr'] = lr
+        return lr
 
     if lr_decay_type == "cos":
         warmup_total_iters  = min(max(warmup_iters_ratio * total_iters, 1), 3)

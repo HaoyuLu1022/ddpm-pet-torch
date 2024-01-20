@@ -22,24 +22,34 @@ class DiffusionDataset(Dataset):
         return self.length
 
     def __getitem__(self, index):
-        # image   = Image.open(self.annotation_lines[index].split()[0])
-        # image   = cvtColor(image).resize([self.model_input_shape[1], self.model_input_shape[0]], Image.BICUBIC)
+        full_dir, low_dir = self.annotation_lines[index].split()
+        full_slice = np.load(full_dir)
+        low_slice = np.load(low_dir)
+        return full_slice, low_slice
+        # full_img = np.fromfile(full_dir, dtype=np.float32)
+        # full_img, invalid_z_list = preprocess_input(full_img.reshape(self.img_shape))
+        # full_img = ndimage.zoom(full_img, [target_shape/img_shape for target_shape, img_shape in zip(self.target_shape, full_img.shape)])
+        # full_img_slices = np.split(full_img, full_img.shape[0], axis=0)
         
-        # image   = np.array(image, dtype=np.float32)
-        # image   = np.transpose(preprocess_input(image), (2, 0, 1))
-        # model_input_shape = (400, 400, 400)
-        image = np.fromfile(self.annotation_lines[index].split()[0], dtype=np.float32)
-        image = preprocess_input(image.reshape(self.img_shape).transpose(1, 2, 0))
-        z_scale = 128/image.shape[2]
-        image = ndimage.zoom(image, [0.64, 0.64, z_scale])
-
-        # valid_img = image[18:(18+363), 18:(18+363), 68:332] # center 363 pixels along x and y axes, and center 264 slices along z axis
-        # standardization to rescale images ito [-1, 1]
-        return image
+        # low_img = np.fromfile(low_dir, dtype=np.float32).reshape(self.img_shape)
+        # low_img = np.delete(low_img, invalid_z_list, 0)
+        # low_img /= 5e3
+        # low_img -= 0.5
+        # low_img /= 0.5
+        # low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(self.target_shape, low_img.shape)])
+        # # low_img_slices = np.split(low_img, low_img.shape[2], axis=2)
+        # low_img_neighbor_slices = sliding_window_view(low_img, window_shape=32, axis=0).transpose(0, 3, 1, 2)
+        # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
+        # low_img_neighbor_slices = [low_img_neighbor_slices[i, :, :, :] for i in range(len(low_img_neighbor_slices))]
+        # # return full_img, low_img
+        # return full_img_slices, low_img_neighbor_slices
 
 def Diffusion_dataset_collate(batch):
-    images = []
-    for image in batch:
-        images.append(image)
-    images = torch.from_numpy(np.array(images, dtype=np.float32))
-    return images
+    full_imgs = []
+    low_imgs = []
+    for images in batch:
+        full_imgs.append(images[0])
+        low_imgs.append(images[1])
+    full_imgs = torch.from_numpy(np.array(full_imgs, dtype=np.float32))
+    low_imgs = torch.from_numpy(np.array(low_imgs, dtype=np.float32))
+    return {"fulldose": full_imgs, "lowdose": low_imgs}
