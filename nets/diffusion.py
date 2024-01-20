@@ -130,6 +130,35 @@ class GaussianDiffusion(nn.Module):
         
         return diffusion_sequence
 
+    @torch.no_grad()
+    def ddim_sample(self, batch_size, device, y=None, use_ema=True, ax_feature=None, ddim_step=20, eta=0, simple_var=True):
+        if y is not None and batch_size != len(y):
+            raise ValueError("sample batch size different from length of given y")
+        
+        x = torch.randn(batch_size, self.img_channels, *self.img_size, device=device)
+        ts = torch.linspace(self.num_timesteps, 0, (ddim_step+1)).to(device).to(torch.long)
+        
+        for t in range(1, ddim_step+1):
+            cur_t = ts[t-1] - 1
+            prev_t = ts[t] - 1
+            t_batch = torch.tensor([cur_t], device=device).repeat(batch_size)
+
+            model = self.ema_model if use_ema else self.model
+            eps = model(x, t_batch, y, ax_feature)
+
+            alpha_bar = self.alphas_cumprod[cur_t]
+            alpha_bar_prev = self.alphas_cumprod[prev_t] if prev_t >= 0 else 1
+
+            noise = torch.rand_like(x)
+            var = eta * (1 - alpha_bar_prev) / (1 - alpha_bar) * (1 - alpha_bar / alpha_bar_prev)
+            first = torch.sqrt(alpha_bar_prev / alpha_bar) * x
+            second = (torch.sqrt(1 - alpha_bar_prev - var) - torch.sqrt(alpha_bar_prev * (1 - alpha_bar) / alpha_bar)) * eps
+            third = torch.sqrt(1 - alpha_bar / alpha_bar_prev) * noise if simple_var else torch.sqrt(var) * noise
+
+            x = first + second + third
+
+        return x.cpu().detach()
+
     def perturb_x(self, x, t, noise):
         return (
             extract(self.sqrt_alphas_cumprod, t,  x.shape) * x +

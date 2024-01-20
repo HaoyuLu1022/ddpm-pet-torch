@@ -1,5 +1,5 @@
 import itertools
-
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -16,7 +16,7 @@ class Diffusion(object):
         #-----------------------------------------------#
         #   model_path指向logs文件夹下的权值文件
         #-----------------------------------------------#
-        "model_path"        : 'model_data/Diffusion_Flower.pth',
+        "model_path"        : 'logs/loss_2024_01_19_22_50_58/Diffusion_Epoch50-GLoss0.0036.pth',
         #-----------------------------------------------#
         #   卷积通道数的设置
         #-----------------------------------------------#
@@ -24,7 +24,7 @@ class Diffusion(object):
         #-----------------------------------------------#
         #   输入图像大小的设置
         #-----------------------------------------------#
-        "input_shape"       : (32, 32),
+        "input_shape"       : (128, 128),
         #-----------------------------------------------#
         #   betas相关参数
         #-----------------------------------------------#
@@ -64,7 +64,7 @@ class Diffusion(object):
                 self.schedule_high * 1000 / self.num_timesteps,
             )
             
-        self.net    = GaussianDiffusion(UNet(3, self.channel), self.input_shape, 3, betas=betas)
+        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=32, base_channels=self.channel), self.input_shape, 1, betas=betas)
 
         device      = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net.load_state_dict(torch.load(self.model_path, map_location=device))
@@ -102,11 +102,51 @@ class Diffusion(object):
     #---------------------------------------------------#
     #   Diffusion1x1的图片
     #---------------------------------------------------#
-    def generate_1x1_image(self, save_path):
+    def generate_1x1_image(self, save_path, condition=None):
         with torch.no_grad():
             randn_in    = torch.randn((1, 1)).cuda() if self.cuda else torch.randn((1, 1))
+            if condition is not None:
+                condition = condition.cuda()
 
-            test_images = self.net.sample(1, randn_in.device, use_ema=False)
+            test_images = self.net.sample(1, randn_in.device, use_ema=False, ax_feature=condition)
             test_images = postprocess_output(test_images[0].cpu().data.numpy().transpose(1, 2, 0))
 
-            Image.fromarray(np.uint8(test_images)).save(save_path)
+            # Image.fromarray(test_images[:, :, 0]).save(save_path)
+            plt.imshow(test_images[:, :, 0], cmap='gray', origin='lower')
+            plt.axis('off')
+            plt.savefig(save_path)
+
+    def show_result(self, device, result_dir, gt, ax_feature=None, mode='ddpm'):
+        if mode == 'ddpm':
+            test_images = self.net.sample(len(ax_feature), device, ax_feature=ax_feature, use_ema=False)
+        elif mode == 'ddim':
+            test_images = self.net.ddim_sample(len(ax_feature), device, ax_feature=ax_feature, ddim_step=20, eta=0, use_ema=False, simple_var=False)
+            # seems that simple_var must be False to provide good results
+
+        size_figure_grid_r = 3
+        size_figure_grid_c = 4
+        fig, ax = plt.subplots(size_figure_grid_r, size_figure_grid_c, figsize=(10, 10), constrained_layout=True)
+        low_imgs = [
+            postprocess_output(np.expand_dims((ax_feature[0][15]).cpu().data.numpy(), axis=0).transpose(2, 1, 0)), 
+            postprocess_output(np.expand_dims(ax_feature[1][15].cpu().data.numpy(),axis=0).transpose(2, 1, 0)),
+            postprocess_output(np.expand_dims(ax_feature[2][15].cpu().data.numpy(), axis=0).transpose(2, 1, 0)),
+            postprocess_output(np.expand_dims(ax_feature[3][15].cpu().data.numpy(), axis=0).transpose(2, 1, 0)),]
+        for i, j in itertools.product(range(size_figure_grid_r), range(size_figure_grid_c)):
+            ax[i, j].get_xaxis().set_visible(False)
+            ax[i, j].get_yaxis().set_visible(False)
+        for k in range(size_figure_grid_c):
+            ax[0, k].cla()
+            ax[0, k].imshow(low_imgs[k], cmap='gray', origin='lower')
+        for k in range(size_figure_grid_c):
+            # i = k // size_figure_grid_c
+            # j = k % size_figure_grid_c
+            ax[1, k].cla()
+            ax[1, k].imshow(postprocess_output(test_images[k].cpu().data.numpy().transpose(2, 1, 0)), cmap='gray', origin='lower')
+        for k in range(size_figure_grid_c): 
+            ax[2, k].cla()
+            ax[2, k].imshow(postprocess_output(gt[k].transpose(2, 1, 0)), cmap='gray', origin='lower')
+
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        plt.savefig(f"{result_dir}/results.png")
+        plt.close('all')  #避免内存泄漏
