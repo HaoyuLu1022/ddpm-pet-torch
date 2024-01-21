@@ -16,7 +16,7 @@ class Diffusion(object):
         #-----------------------------------------------#
         #   model_path指向logs文件夹下的权值文件
         #-----------------------------------------------#
-        "model_path"        : 'logs/loss_2024_01_19_22_50_58/Diffusion_Epoch50-GLoss0.0036.pth',
+        "model_path"        : 'model_data/Diffusion_Flower.pth',
         #-----------------------------------------------#
         #   卷积通道数的设置
         #-----------------------------------------------#
@@ -117,10 +117,13 @@ class Diffusion(object):
             plt.savefig(save_path)
 
     def show_result(self, device, result_dir, gt, ax_feature=None, mode='ddpm'):
+        print("Generating images...")
+
         if mode == 'ddpm':
             test_images = self.net.sample(len(ax_feature), device, ax_feature=ax_feature, use_ema=False)
         elif mode == 'ddim':
-            test_images = self.net.ddim_sample(len(ax_feature), device, ax_feature=ax_feature, ddim_step=20, eta=0, use_ema=False, simple_var=False)
+            ddim_step = int(input('Input your sampling step for DDIM: '))
+            test_images = self.net.ddim_sample(len(ax_feature), device, ax_feature=ax_feature, ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False)
             # seems that simple_var must be False to provide good results
 
         size_figure_grid_r = 3
@@ -148,5 +151,6 @@ class Diffusion(object):
 
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
-        plt.savefig(f"{result_dir}/results.png")
+        plt_path = f"{result_dir}/{mode}_{ddim_step}_results.png" if mode == 'ddim' else f"{result_dir}/{mode}_results.png"
+        plt.savefig(plt_path)
         plt.close('all')  #避免内存泄漏
