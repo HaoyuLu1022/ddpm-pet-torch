@@ -56,18 +56,17 @@ def fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimize
         print('Total_loss: %.4f ' % (total_loss))
         loss_history.append_loss(epoch + 1, total_loss = total_loss)
         
-        show_period = 5
-        if (epoch + 1) % show_period == 0: 
+        #----------------------------#
+        #   每若干个世代保存一次
+        #----------------------------#
+        if (epoch + 1) % save_period == 0 or epoch + 1 == Epoch:
             test_full = test_slices_dict["fulldose"]
             test_low = test_slices_dict["lowdose"]
             with torch.no_grad():
                 test_low = test_low.cuda(local_rank)
             print('Show_result:')
             show_result(epoch + 1, diffusion_model, test_low.device, result_dir, test_full, ax_feature=test_low)
-        #----------------------------#
-        #   每若干个世代保存一次
-        #----------------------------#
-        if (epoch + 1) % save_period == 0 or epoch + 1 == Epoch:
+            
             torch.save(diffusion_model.state_dict(), os.path.join(save_dir, 'Diffusion_Epoch%d-GLoss%.4f.pth'%(epoch + 1, total_loss)))
             
         torch.save(diffusion_model.state_dict(), os.path.join(save_dir, "diffusion_model_last_epoch_weights.pth"))

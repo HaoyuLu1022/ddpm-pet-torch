@@ -8,9 +8,12 @@ import torch
 import os
 import scipy.ndimage as ndimage
 from numpy.lib.stride_tricks import sliding_window_view
+import re
 
 from ddpm import Diffusion
 from utils.utils import preprocess_input
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 img_shape = (256, 200, 200)
 target_shape = (128, 128, 128)
@@ -38,20 +41,28 @@ with torch.no_grad():
     test_low = test_low.cuda()
 
 if __name__ == "__main__":
-    save_path = "results/predict_out/loss_2024_01_19_22_50_58/Diffusion_Epoch100-GLoss0.0035"
+    model_path = input("Please specify the model weight directory: ")
+    pattern1 = r'loss_(\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2})'
+    pattern2 = r'Diffusion_Epoch(\d+)-GLoss([\d.]+)\.pth'
+    match1 = re.search(pattern1, model_path)
+    match2 = re.search(pattern2, model_path)
+    folder1 = match1.group(0)
+    folder2 = match2.group(0)
+    save_path = f"results/predict_out/{folder1}/{folder2[:-4]}"
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    save_path_5x5 = f"{save_path}/predict_5x5_results.png"
-    save_path_1x1 = f"{save_path}/predict_1x1_results.png"
+    # save_path_5x5 = f"{save_path}/predict_5x5_results.png"
+    # save_path_1x1 = f"{save_path}/predict_1x1_results.png"
 
-    ddpm = Diffusion(model_path='logs/loss_2024_01_19_22_50_58/Diffusion_Epoch100-GLoss0.0035.pth')
+    ddpm = Diffusion(model_path=model_path)
     while True:
         mode = input('Choose generation mode (ddpm, ddim, or press Q to quit): ')
         if mode == 'q' or mode == 'Q':
             break
         # ddpm.generate_1x1_image(save_path_1x1, condition=low_slice)
         start = time.perf_counter()
-        ddpm.show_result(test_low.device, save_path, test_full_list, test_low, mode) 
+        # ddpm.show_result(test_low.device, save_path, test_full_list, test_low, mode)
+        ddpm.show_result_3d(test_low.device, save_path, test_full_list, test_low, mode) 
         end = time.perf_counter()
         print(f"Generation done, consuming {(end-start)}s.")
         

@@ -7,6 +7,9 @@ import numpy as np
 import torch
 import os
 from typing import Tuple, List
+from skimage.metrics import peak_signal_noise_ratio, structural_similarity, normalized_root_mse
+from skimage.exposure import rescale_intensity
+from prettytable import PrettyTable
 
 maxn = 5e3
 
@@ -47,16 +50,19 @@ def postprocess_output(x):
     return x
 
 def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
-    test_images = net.sample(len(ax_feature), device, ax_feature=ax_feature)
+    test_images = net.ddim_sample(len(ax_feature), device, ax_feature=ax_feature, use_ema=False, ddim_step=25, eta=0, simple_var=False)
 
     size_figure_grid_r = 3
     size_figure_grid_c = 4
     fig, ax = plt.subplots(size_figure_grid_r, size_figure_grid_c, figsize=(10, 10), constrained_layout=True)
     low_imgs = [
-        postprocess_output(np.expand_dims((ax_feature[0][15]).cpu().data.numpy(), axis=0).transpose(2, 1, 0)), 
-        postprocess_output(np.expand_dims(ax_feature[1][15].cpu().data.numpy(),axis=0).transpose(2, 1, 0)),
-        postprocess_output(np.expand_dims(ax_feature[2][15].cpu().data.numpy(), axis=0).transpose(2, 1, 0)),
-        postprocess_output(np.expand_dims(ax_feature[3][15].cpu().data.numpy(), axis=0).transpose(2, 1, 0)),]
+        postprocess_output(np.expand_dims((ax_feature[i][15]).cpu().data.numpy(), axis=0).transpose(2, 1, 0)) for i in range(ax_feature.shape[0])]
+    predict_images = [
+        postprocess_output(test_images[i].cpu().data.numpy().transpose(2, 1, 0)) for i in range(size_figure_grid_c)
+    ]
+    gt_images = [
+        postprocess_output(gt[i].transpose(2, 1, 0)) for i in range(size_figure_grid_c)
+    ]
     for i, j in itertools.product(range(size_figure_grid_r), range(size_figure_grid_c)):
         ax[i, j].get_xaxis().set_visible(False)
         ax[i, j].get_yaxis().set_visible(False)
@@ -67,10 +73,23 @@ def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
         # i = k // size_figure_grid_c
         # j = k % size_figure_grid_c
         ax[1, k].cla()
-        ax[1, k].imshow(postprocess_output(test_images[k].cpu().data.numpy().transpose(2, 1, 0)), cmap='gray', origin='lower')
+        ax[1, k].imshow(predict_images[k], cmap='gray', origin='lower')
     for k in range(size_figure_grid_c): 
         ax[2, k].cla()
-        ax[2, k].imshow(postprocess_output(gt[k].transpose(2, 1, 0)), cmap='gray', origin='lower')
+        ax[2, k].imshow(gt_images[k], cmap='gray', origin='lower')
+    
+    table = PrettyTable(['Metrics', '1st slice', '2nd slice', '3rd slice', '4th slice'])
+    psnr = []
+    ssim = []
+    nrmse = []
+    for i in range(size_figure_grid_c): 
+        psnr.append(peak_signal_noise_ratio(predict_images[i], gt_images[i], data_range=1e4)) 
+        ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=1e4, channel_axis=2))
+        nrmse.append(normalized_root_mse(rescale_intensity(predict_images[i]), rescale_intensity(gt_images[i]), normalization='euclidean'))
+    table.add_row(['PSNR', f"{psnr[0]:.3f}", f"{psnr[1]:.3f}", f"{psnr[2]:.3f}", f"{psnr[3]:.3f}"])
+    table.add_row(['SSIM', f"{ssim[0]:.3f}", f"{ssim[1]:.3f}", f"{ssim[2]:.3f}", f"{ssim[3]:.3f}"])
+    table.add_row(['NRMSE', f"{nrmse[0]:.3f}", f"{nrmse[1]:.3f}", f"{nrmse[2]:.3f}", f"{nrmse[3]:.3f}"])
+    print(table)
 
     # label = 'Epoch {0}'.format(num_epoch)
     # fig.text(0.5, -0.5, label, ha='center')

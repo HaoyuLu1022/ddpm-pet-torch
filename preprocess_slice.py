@@ -11,10 +11,10 @@ from utils.utils import cvtColor, preprocess_input
 img_shape = (256, 200, 200)
 target_shape = (128, 128, 128)
 files = "train_lines.txt"
-full_save_dir = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/full_slices"
+full_save_dir = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices/full"
 if not os.path.exists(full_save_dir):
     os.makedirs(full_save_dir)
-low_save_dir = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/low_slices"
+low_save_dir = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices/low"
 if not os.path.exists(low_save_dir):
     os.makedirs(low_save_dir)
 with open(files) as f:
@@ -34,8 +34,9 @@ def slice_processing(line):
     low_img /= 0.5
     low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(target_shape, low_img.shape)])
     # low_img_slices = np.split(low_img, low_img.shape[2], axis=2)
-    low_img_neighbor_slices = sliding_window_view(low_img, window_shape=32, axis=0).transpose(0, 3, 1, 2)
-    low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
+    low_img = np.pad(low_img, ((15, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
+    low_img_neighbor_slices = sliding_window_view(low_img, window_shape=31, axis=0).transpose(0, 3, 1, 2)
+    # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
     low_img_neighbor_slices = [low_img_neighbor_slices[i, :, :, :] for i in range(len(low_img_neighbor_slices))]
 
     for i, (full_slice, low_slice) in enumerate(zip(full_img_slices, low_img_neighbor_slices)):
@@ -43,8 +44,8 @@ def slice_processing(line):
         np.save(f"{low_save_dir}/{low_dir[62:70]}-{low_dir[71:-4]}-{i}.npy", low_slice)
 
 if __name__ == '__main__':
-    for line in tqdm(lines):
-        slice_processing(line)
+    # for line in tqdm(lines):
+    #     slice_processing(line)
 
-    # with mp.Pool(14) as p:
-    #     p.map(slice_processing, lines)
+    with mp.Pool(14) as p:
+        p.map(slice_processing, lines)

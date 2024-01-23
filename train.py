@@ -17,9 +17,9 @@ from utils.dataloader import Diffusion_dataset_collate, DiffusionDataset
 from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config, preprocess_input
 from utils.utils_fit import fit_one_epoch
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 # os.environ['NVIDIA_P2P_DISABLE'] = '1'
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:5120"
+# os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:5120"
 
 if __name__ == "__main__":
     #-------------------------------#
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     #   Min_lr          模型的最小学习率，默认为最大学习率的0.01
     #------------------------------------------------------------------#
     Init_lr             = 1e-5
-    Min_lr              = 1e-7
+    Min_lr              = 1e-8
     #------------------------------------------------------------------#
     #   optimizer_type  使用到的优化器种类，可选的有adam、adamw
     #   momentum        优化器内部使用到的momentum参数
@@ -102,17 +102,17 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   save_period     多少个epoch保存一次权值
     #------------------------------------------------------------------#
-    save_period         = 25
+    save_period         = 5
     #------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     #------------------------------------------------------------------#
-    save_dir            = 'logs'
+    save_dir            = '/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/ddpm-pet-torch-logs'
     #------------------------------------------------------------------#
     #   num_workers     用于设置是否使用多线程读取数据
     #                   开启后会加快数据读取速度，但是会占用更多内存
     #                   内存较小的电脑可以设置为2或者0  
     #------------------------------------------------------------------#
-    num_workers         = 8
+    num_workers         = 16
     
     #------------------------------------------#
     #   获得图片路径
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     #------------------------------------------#
     #   Diffusion网络
     #------------------------------------------#
-    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=32, base_channels=channel), model_input_shape, 1, betas=betas)
+    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=31, base_channels=channel), model_input_shape, 1, betas=betas)
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作 <- 
@@ -267,10 +267,11 @@ if __name__ == "__main__":
         test_low -= 0.5
         test_low /= 0.5
         test_low = ndimage.zoom(test_low, [t_shape/img_shape for t_shape, img_shape in zip(target_shape, test_low.shape)])
-        test_low_list = sliding_window_view(test_low, window_shape=32, axis=0).transpose(0, 3, 1, 2)
-        test_low_list = np.concatenate([np.repeat(np.expand_dims(test_low_list[0, :, :, :], axis=0), 16, axis=0), test_low_list, np.repeat(np.expand_dims(test_low_list[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
+        test_low = np.pad(test_low, ((15, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
+        test_low_list = sliding_window_view(test_low, window_shape=31, axis=0).transpose(0, 3, 1, 2)
+        # test_low_list = np.concatenate([np.repeat(np.expand_dims(test_low_list[0, :, :, :], axis=0), 16, axis=0), test_low_list, np.repeat(np.expand_dims(test_low_list[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
         test_low_list = [test_low_list[i, :, :, :] for i in range(len(test_low_list))]
-        test_low = torch.stack([torch.Tensor(test_low_list[i]) for i in range(0, len(test_low_list), len(test_low_list)//4)], dim=0)
+        test_low = torch.stack([torch.Tensor(test_low_list[i].copy()) for i in range(0, len(test_low_list), len(test_low_list)//4)], dim=0)
         test_slices_dict = {
             "fulldose": test_full_list, 
             "lowdose": test_low

@@ -5,10 +5,15 @@ import numpy as np
 import torch
 from PIL import Image
 from torch import nn
+import scipy.ndimage as ndimage
+from numpy.lib.stride_tricks import sliding_window_view
+from skimage.metrics import structural_similarity, normalized_root_mse, peak_signal_noise_ratio
+from skimage.exposure import rescale_intensity
+from prettytable import PrettyTable
 
 from nets import (GaussianDiffusion, UNet, generate_cosine_schedule,
                   generate_linear_schedule)
-from utils.utils import postprocess_output, show_config
+from utils.utils import postprocess_output, show_config, preprocess_input
 
 
 class Diffusion(object):
@@ -64,7 +69,7 @@ class Diffusion(object):
                 self.schedule_high * 1000 / self.num_timesteps,
             )
             
-        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=32, base_channels=self.channel), self.input_shape, 1, betas=betas)
+        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=31, base_channels=self.channel), self.input_shape, 1, betas=betas)
 
         device      = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net.load_state_dict(torch.load(self.model_path, map_location=device))
@@ -130,10 +135,13 @@ class Diffusion(object):
         size_figure_grid_c = 4
         fig, ax = plt.subplots(size_figure_grid_r, size_figure_grid_c, figsize=(10, 10), constrained_layout=True)
         low_imgs = [
-            postprocess_output(np.expand_dims((ax_feature[0][15]).cpu().data.numpy(), axis=0).transpose(2, 1, 0)), 
-            postprocess_output(np.expand_dims(ax_feature[1][15].cpu().data.numpy(),axis=0).transpose(2, 1, 0)),
-            postprocess_output(np.expand_dims(ax_feature[2][15].cpu().data.numpy(), axis=0).transpose(2, 1, 0)),
-            postprocess_output(np.expand_dims(ax_feature[3][15].cpu().data.numpy(), axis=0).transpose(2, 1, 0)),]
+            postprocess_output(np.expand_dims((ax_feature[i][15]).cpu().data.numpy(), axis=0).transpose(2, 1, 0)) for i in range(ax_feature.shape[0])]
+        predict_images = [
+            postprocess_output(test_images[i].cpu().data.numpy().transpose(2, 1, 0)) for i in range(size_figure_grid_c)
+        ]
+        gt_images = [
+            postprocess_output(gt[i].transpose(2, 1, 0)) for i in range(size_figure_grid_c)
+        ]
         for i, j in itertools.product(range(size_figure_grid_r), range(size_figure_grid_c)):
             ax[i, j].get_xaxis().set_visible(False)
             ax[i, j].get_yaxis().set_visible(False)
@@ -144,13 +152,74 @@ class Diffusion(object):
             # i = k // size_figure_grid_c
             # j = k % size_figure_grid_c
             ax[1, k].cla()
-            ax[1, k].imshow(postprocess_output(test_images[k].cpu().data.numpy().transpose(2, 1, 0)), cmap='gray', origin='lower')
+            ax[1, k].imshow(predict_images[k], cmap='gray', origin='lower')
         for k in range(size_figure_grid_c): 
             ax[2, k].cla()
-            ax[2, k].imshow(postprocess_output(gt[k].transpose(2, 1, 0)), cmap='gray', origin='lower')
+            ax[2, k].imshow(gt_images[k], cmap='gray', origin='lower')
+        
+        table = PrettyTable(['Metrics', '1st slice', '2nd slice', '3rd slice', '4th slice'])
+        psnr = []
+        ssim = []
+        nrmse = []
+        for i in range(size_figure_grid_c): 
+            psnr.append(peak_signal_noise_ratio(predict_images[i], gt_images[i], data_range=1e4)) 
+            ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=1e4, channel_axis=2))
+            nrmse.append(normalized_root_mse(rescale_intensity(predict_images[i]), rescale_intensity(gt_images[i]), normalization='euclidean'))
+        table.add_row(['PSNR', f"{psnr[0]:.3f}", f"{psnr[1]:.3f}", f"{psnr[2]:.3f}", f"{psnr[3]:.3f}"])
+        table.add_row(['SSIM', f"{ssim[0]:.3f}", f"{ssim[1]:.3f}", f"{ssim[2]:.3f}", f"{ssim[3]:.3f}"])
+        table.add_row(['NRMSE', f"{nrmse[0]:.3f}", f"{nrmse[1]:.3f}", f"{nrmse[2]:.3f}", f"{nrmse[3]:.3f}"])
+        print(table)
 
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
         plt_path = f"{result_dir}/{mode}_{ddim_step}_results.png" if mode == 'ddim' else f"{result_dir}/{mode}_results.png"
         plt.savefig(plt_path)
         plt.close('all')  #避免内存泄漏
+
+    def show_result_3d(self, device, result_dir, gt, ax_feature=None, mode='ddim'):
+        img_shape = (256, 200, 200)
+        target_shape = (128, 128, 128)
+        files = "train_lines.txt"
+        with open(files) as f:
+            lines = f.readlines()
+        full_dir, low_dir = lines[0].split()
+        full_img = np.fromfile(full_dir, dtype=np.float32)
+        full_img, invalid_z_list = preprocess_input(full_img.reshape(img_shape))
+        low_img = np.fromfile(low_dir, dtype=np.float32).reshape(img_shape)
+        low_img = np.delete(low_img, invalid_z_list, 0)
+        low_img /= 5e3
+        low_img -= 0.5
+        low_img /= 0.5
+        low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(target_shape, low_img.shape)])
+        low_img = np.pad(low_img, ((15, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
+        low_img_neighbor_slices = sliding_window_view(low_img, window_shape=31, axis=0).transpose(0, 3, 1, 2)
+        low_img_neighbor_slices = np.split(low_img_neighbor_slices, low_img_neighbor_slices.shape[0], axis=0)
+        low_img_neighbor_slices = [torch.from_numpy(slice.copy()).cuda(device) for slice in low_img_neighbor_slices]
+        # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
+        # low_img_neighbor_slices = [torch.Tensor(low_img_neighbor_slices[i, :, :, :]).unsqueeze(0).cuda() for i in range(len(low_img_neighbor_slices))]
+        if mode == 'ddpm':
+            print("Generating images...")
+            fulldose = self.net.sample(1, device, ax_feature=low_img_neighbor_slices[0], use_ema=False).squeeze(0)
+            for i in range(1, len(low_img_neighbor_slices)):
+                fulldose = torch.concatenate((fulldose, self.net.sample(1, device, ax_feature=low_img_neighbor_slices[i], use_ema=False).squeeze(0)), dim=0)
+        elif mode == 'ddim': 
+            ddim_step = int(input('Input your sampling step for DDIM: '))
+            print("Generating images...")
+            fulldose = self.net.ddim_sample(1, device, ax_feature=low_img_neighbor_slices[0], ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False).squeeze(0)
+            for i in range(1, len(low_img_neighbor_slices)):
+                fulldose = torch.concatenate((fulldose, self.net.ddim_sample(1, device, ax_feature=low_img_neighbor_slices[i], ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False).squeeze(0)), dim=0)
+        fulldose = postprocess_output(fulldose.cpu().data.numpy())
+        fulldose = ndimage.zoom(fulldose, [shape/target_shape for target_shape, shape in zip(target_shape, full_img.shape)])
+
+        full_img = postprocess_output(full_img)
+        ssim = structural_similarity(full_img, fulldose, data_range=1e4)
+        psnr = peak_signal_noise_ratio(full_img, fulldose, data_range=1e4)
+        nrmse = normalized_root_mse(rescale_intensity(full_img), rescale_intensity(fulldose), normalization='euclidean')
+
+        print(f"SSIM: {ssim}\nPSNR: {psnr}\nNRMSE: {nrmse}")
+
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        img_path = f"{result_dir}/{mode}_{ddim_step}_results.img" if mode == 'ddim' else f"{result_dir}/{mode}_results.img"
+        
+        fulldose.tofile(img_path)
