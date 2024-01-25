@@ -61,7 +61,7 @@ def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
         postprocess_output(test_images[i].cpu().data.numpy().transpose(2, 1, 0)) for i in range(size_figure_grid_c)
     ]
     gt_images = [
-        postprocess_output(gt[i].transpose(2, 1, 0)) for i in range(size_figure_grid_c)
+        postprocess_output(gt[i].copy().transpose(2, 1, 0)) for i in range(size_figure_grid_c)
     ]
     for i, j in itertools.product(range(size_figure_grid_r), range(size_figure_grid_c)):
         ax[i, j].get_xaxis().set_visible(False)

@@ -146,7 +146,7 @@ if __name__ == "__main__":
     #------------------------------------------#
     #   Diffusion网络
     #------------------------------------------#
-    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=31, base_channels=channel), model_input_shape, 1, betas=betas)
+    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=32, base_channels=channel), model_input_shape, 1, betas=betas)
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作 <- 
@@ -267,8 +267,8 @@ if __name__ == "__main__":
         test_low -= 0.5
         test_low /= 0.5
         test_low = ndimage.zoom(test_low, [t_shape/img_shape for t_shape, img_shape in zip(target_shape, test_low.shape)])
-        test_low = np.pad(test_low, ((15, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
-        test_low_list = sliding_window_view(test_low, window_shape=31, axis=0).transpose(0, 3, 1, 2)
+        test_low = np.pad(test_low, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
+        test_low_list = sliding_window_view(test_low, window_shape=32, axis=0).transpose(0, 3, 1, 2)
         # test_low_list = np.concatenate([np.repeat(np.expand_dims(test_low_list[0, :, :, :], axis=0), 16, axis=0), test_low_list, np.repeat(np.expand_dims(test_low_list[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
         test_low_list = [test_low_list[i, :, :, :] for i in range(len(test_low_list))]
         test_low = torch.stack([torch.Tensor(test_low_list[i].copy()) for i in range(0, len(test_low_list), len(test_low_list)//4)], dim=0)
