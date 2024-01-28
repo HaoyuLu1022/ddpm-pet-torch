@@ -10,6 +10,7 @@ from numpy.lib.stride_tricks import sliding_window_view
 from skimage.metrics import structural_similarity, normalized_root_mse, peak_signal_noise_ratio
 from skimage.exposure import rescale_intensity
 from prettytable import PrettyTable
+from tqdm import tqdm
 
 from nets import (GaussianDiffusion, UNet, generate_cosine_schedule,
                   generate_linear_schedule)
@@ -69,7 +70,7 @@ class Diffusion(object):
                 self.schedule_high * 1000 / self.num_timesteps,
             )
             
-        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=31, base_channels=self.channel), self.input_shape, 1, betas=betas)
+        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=32, base_channels=self.channel), self.input_shape, 1, betas=betas)
 
         device      = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net.load_state_dict(torch.load(self.model_path, map_location=device))
@@ -176,7 +177,7 @@ class Diffusion(object):
         plt.savefig(plt_path)
         plt.close('all')  #避免内存泄漏
 
-    def show_result_3d(self, device, result_dir, gt, ax_feature=None, mode='ddim'):
+    def show_result_3d(self, device, result_dir, mode, gt=None, ax_feature=None):
         img_shape = (256, 200, 200)
         target_shape = (128, 128, 128)
         files = "train_lines.txt"
@@ -197,17 +198,17 @@ class Diffusion(object):
         low_img_neighbor_slices = [torch.from_numpy(slice.copy()).cuda(device) for slice in low_img_neighbor_slices]
         # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
         # low_img_neighbor_slices = [torch.Tensor(low_img_neighbor_slices[i, :, :, :]).unsqueeze(0).cuda() for i in range(len(low_img_neighbor_slices))]
+        fulldose = []
         if mode == 'ddpm':
             print("Generating images...")
-            fulldose = self.net.sample(1, device, ax_feature=low_img_neighbor_slices[0], use_ema=False).squeeze(0)
-            for i in range(1, len(low_img_neighbor_slices)):
-                fulldose = torch.concatenate((fulldose, self.net.sample(1, device, ax_feature=low_img_neighbor_slices[i], use_ema=False).squeeze(0)), dim=0)
+            for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
+                fulldose.append(self.net.sample(1, device, ax_feature=low_img_neighbor_slices[i], use_ema=False).squeeze(0, 1))
         elif mode == 'ddim': 
             ddim_step = int(input('Input your sampling step for DDIM: '))
             print("Generating images...")
-            fulldose = self.net.ddim_sample(1, device, ax_feature=low_img_neighbor_slices[0], ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False).squeeze(0)
-            for i in range(1, len(low_img_neighbor_slices)):
-                fulldose = torch.concatenate((fulldose, self.net.ddim_sample(1, device, ax_feature=low_img_neighbor_slices[i], ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False).squeeze(0)), dim=0)
+            for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
+                fulldose.append(self.net.ddim_sample(1, device, ax_feature=low_img_neighbor_slices[i], ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False).squeeze(0, 1))
+        fulldose = torch.stack(fulldose, dim=0)
         fulldose = postprocess_output(fulldose.cpu().data.numpy())
         fulldose = ndimage.zoom(fulldose, [shape/target_shape for target_shape, shape in zip(target_shape, full_img.shape)])
 
