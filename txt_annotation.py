@@ -9,8 +9,8 @@ full_path = "../cropped/fulldose"
 low_path = "../cropped/lowdose"
 
 if __name__ == "__main__":
-    train_file = open('train_slices.txt', 'w')
-    test_file = open('test_slices.txt', 'w')
+    train_file = open('train_lines.txt', 'w')
+    test_file = open('test_lines.txt', 'w')
     data_list = []
     for idx in [1, 2]:
         full_names = sorted(os.listdir(full_path+str(idx)))
