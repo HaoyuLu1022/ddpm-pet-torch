@@ -11,7 +11,8 @@ from skimage.metrics import peak_signal_noise_ratio, structural_similarity, norm
 from skimage.exposure import rescale_intensity
 from prettytable import PrettyTable
 
-maxn = 5e3
+maxn = 0.004
+scale = 1e4
 
 #---------------------------------------------------------#
 #   将图像转换成RGB图像，防止灰度图在预测时报错。
@@ -33,10 +34,10 @@ def cvtColor(image):
 #     x /= 0.5
 #     return x
 def preprocess_input(x: np.ndarray) -> Tuple[np.ndarray, List]: 
-    invalid_z_list = [k for k in range(x.shape[0]) if np.max(x[k, :, :]) > maxn]
+    invalid_z_list = [k for k in range(x.shape[0]) if np.max(x[k, :, :]) > maxn*scale]
     x_rev = np.delete(x, invalid_z_list, 0)
 
-    x_rev /= maxn
+    x_rev /= maxn*scale
     x_rev -= 0.5
     x_rev /= 0.5
 
@@ -46,7 +47,7 @@ def preprocess_input(x: np.ndarray) -> Tuple[np.ndarray, List]:
 def postprocess_output(x):
     x *= 0.5
     x += 0.5
-    x *= maxn
+    x *= maxn*scale
     return x
 
 def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):

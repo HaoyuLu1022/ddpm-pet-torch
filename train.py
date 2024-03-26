@@ -17,9 +17,11 @@ from utils.dataloader import Diffusion_dataset_collate, DiffusionDataset
 from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config, preprocess_input
 from utils.utils_fit import fit_one_epoch
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 # os.environ['NVIDIA_P2P_DISABLE'] = '1'
 # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:5120"
+
+scale = 1e4
 
 if __name__ == "__main__":
     #-------------------------------#
@@ -51,7 +53,7 @@ if __name__ == "__main__":
     #   此处使用的是整个模型的权重，因此是在train.py进行加载的。
     #   如果想要让模型从0开始训练，则设置model_path = ''。
     #---------------------------------------------------------------------#
-    diffusion_model_path    = "model_weights/Diffusion_Flower_mod.pth"
+    diffusion_model_path    = "logs/loss_2024_03_18_14_51_27/Diffusion_Epoch180-GLoss0.0020.pth" # "../ddpm-pet-torch-logs/loss_2024_03_10_23_42_17/Diffusion_Epoch500-GLoss0.0018.pth"
     #---------------------------------------------------------------------#
     #   卷积通道数的设置，显存不够时可以降低，如64
     #---------------------------------------------------------------------#
@@ -68,13 +70,13 @@ if __name__ == "__main__":
     #   设置后在训练时Diffusion的图像看不出来，需要在预测时看单张图像。
     #---------------------------------------------------------------------#
     model_input_shape     = (128, 128)
-    img_shape = (256, 200, 200)
+    img_shape = (256, 256, 256)
     
     #------------------------------#
     #   训练参数设置
     #------------------------------#
     Init_Epoch      = 0
-    Epoch           = 500
+    Epoch           = 250
     batch_size      = 6
     
     #------------------------------------------------------------------#
@@ -102,17 +104,17 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   save_period     多少个epoch保存一次权值
     #------------------------------------------------------------------#
-    save_period         = 5
+    save_period         = 5 
     #------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     #------------------------------------------------------------------#
-    save_dir            = '/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/ddpm-pet-torch-logs'
+    save_dir            = 'logs'
     #------------------------------------------------------------------#
     #   num_workers     用于设置是否使用多线程读取数据
     #                   开启后会加快数据读取速度，但是会占用更多内存
     #                   内存较小的电脑可以设置为2或者0  
     #------------------------------------------------------------------#
-    num_workers         = 16
+    num_workers         = 14
     
     #------------------------------------------#
     #   获得图片路径
@@ -146,7 +148,7 @@ if __name__ == "__main__":
     #------------------------------------------#
     #   Diffusion网络
     #------------------------------------------#
-    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=32, base_channels=channel), model_input_shape, 1, betas=betas)
+    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=32, base_channels=channel, return_feat=None), model_input_shape, 1, betas=betas)
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作 <- 
@@ -255,17 +257,18 @@ if __name__ == "__main__":
         with open(test_path) as f:
             lines = f.readlines()
         test_full_dir, test_low_dir = lines[0].split()
-        test_full = np.fromfile(test_full_dir, dtype=np.float32)
-        test_full, invalid_z_list = preprocess_input(test_full.reshape(img_shape))
+        test_full = np.fromfile(test_full_dir, dtype=np.float32).reshape(img_shape) * scale
+        test_full, invalid_z_list = preprocess_input(test_full)
         test_full = ndimage.zoom(test_full, [t_shape/img_shape for t_shape, img_shape in zip(target_shape, test_full.shape)])
         test_full_list = np.split(test_full, test_full.shape[0], axis=0)
         test_full_list = [test_full_list[i] for i in range(0, len(test_full_list), len(test_full_list)//4)]
 
-        test_low = np.fromfile(test_low_dir, dtype=np.float32).reshape(img_shape)
+        test_low = np.fromfile(test_low_dir, dtype=np.float32).reshape(img_shape) * scale
         test_low = np.delete(test_low, invalid_z_list, 0)
-        test_low /= 5e3
+        test_low /= 0.004*scale #5e3
         test_low -= 0.5
         test_low /= 0.5
+        # test_low = preprocess_input(test_low)
         test_low = ndimage.zoom(test_low, [t_shape/img_shape for t_shape, img_shape in zip(target_shape, test_low.shape)])
         test_low = np.pad(test_low, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
         test_low_list = sliding_window_view(test_low, window_shape=32, axis=0).transpose(0, 3, 1, 2)

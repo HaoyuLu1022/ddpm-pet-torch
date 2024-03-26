@@ -70,7 +70,7 @@ class Diffusion(object):
                 self.schedule_high * 1000 / self.num_timesteps,
             )
             
-        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=32, base_channels=self.channel), self.input_shape, 1, betas=betas)
+        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=32, base_channels=self.channel, return_feat=None), self.input_shape, 1, betas=betas)
 
         device      = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net.load_state_dict(torch.load(self.model_path, map_location=device))
@@ -163,8 +163,8 @@ class Diffusion(object):
         ssim = []
         nrmse = []
         for i in range(size_figure_grid_c): 
-            psnr.append(peak_signal_noise_ratio(predict_images[i], gt_images[i], data_range=1e4)) 
-            ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=1e4, channel_axis=2))
+            psnr.append(peak_signal_noise_ratio(predict_images[i], gt_images[i], data_range=0.005)) 
+            ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=0.005, channel_axis=2))
             nrmse.append(normalized_root_mse(rescale_intensity(predict_images[i]), rescale_intensity(gt_images[i]), normalization='euclidean'))
         table.add_row(['PSNR', f"{psnr[0]:.3f}", f"{psnr[1]:.3f}", f"{psnr[2]:.3f}", f"{psnr[3]:.3f}"])
         table.add_row(['SSIM', f"{ssim[0]:.3f}", f"{ssim[1]:.3f}", f"{ssim[2]:.3f}", f"{ssim[3]:.3f}"])
@@ -177,20 +177,26 @@ class Diffusion(object):
         plt.savefig(plt_path)
         plt.close('all')  #避免内存泄漏
 
-    def show_result_3d(self, device, result_dir, mode, gt=None, ax_feature=None):
-        img_shape = (256, 200, 200)
+    def show_result_3d(self, device, result_dir, mode='ddim'):
+        img_shape = (256, 256, 256)
         target_shape = (128, 128, 128)
-        files = "train_lines.txt"
+        files = "test_lines.txt"
+        scale = 1e4
         with open(files) as f:
-            lines = f.readlines()
+           lines = f.readlines()
         full_dir, low_dir = lines[0].split()
-        full_img = np.fromfile(full_dir, dtype=np.float32)
-        full_img, invalid_z_list = preprocess_input(full_img.reshape(img_shape))
-        low_img = np.fromfile(low_dir, dtype=np.float32).reshape(img_shape)
+        #full_dir = '/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/cropped/fulldose/fulldoseP-67292.img'
+        #low_dir = '/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/cropped/lowdose2/P-67292.img'
+        full_img = np.fromfile(full_dir, dtype=np.float32).reshape(img_shape) * scale
+        # full_img = rescale_intensity(full_img, out_range=(-1, 1))
+        full_img, invalid_z_list = preprocess_input(full_img)
+        low_img = np.fromfile(low_dir, dtype=np.float32).reshape(img_shape) * scale
         low_img = np.delete(low_img, invalid_z_list, 0)
-        low_img /= 5e3
+        low_img /= 0.004*scale #5e3
         low_img -= 0.5
         low_img /= 0.5
+        # low_img = preprocess_input(low_img)
+        # low_img = rescale_intensity(low_img, out_range=(-1, 1))
         low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(target_shape, low_img.shape)])
         low_img = np.pad(low_img, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
         low_img_neighbor_slices = sliding_window_view(low_img, window_shape=32, axis=0).transpose(0, 3, 1, 2)
@@ -204,7 +210,7 @@ class Diffusion(object):
             for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
                 fulldose.append(self.net.sample(1, device, ax_feature=low_img_neighbor_slices[i], use_ema=False).squeeze(0, 1))
         elif mode == 'ddim': 
-            ddim_step = int(input('Input your sampling step for DDIM: '))
+            ddim_step = int(input('Input your sampling step for DDIM (default to 25): '))
             print("Generating images...")
             for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
                 fulldose.append(self.net.ddim_sample(1, device, ax_feature=low_img_neighbor_slices[i], ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False).squeeze(0, 1))
@@ -213,9 +219,9 @@ class Diffusion(object):
         fulldose = ndimage.zoom(fulldose, [shape/target_shape for target_shape, shape in zip(target_shape, full_img.shape)])
 
         full_img = postprocess_output(full_img)
-        ssim = structural_similarity(full_img, fulldose, data_range=1e4)
-        psnr = peak_signal_noise_ratio(full_img, fulldose, data_range=1e4)
-        nrmse = normalized_root_mse(rescale_intensity(full_img), rescale_intensity(fulldose), normalization='euclidean')
+        ssim = structural_similarity(full_img, fulldose, data_range=0.008*scale) #1e4
+        psnr = peak_signal_noise_ratio(full_img, fulldose, data_range=0.008*scale) #1e4
+        nrmse = normalized_root_mse(full_img, fulldose, normalization='euclidean')
 
         print(f"SSIM: {ssim}\nPSNR: {psnr}\nNRMSE: {nrmse}")
 
@@ -224,3 +230,59 @@ class Diffusion(object):
         img_path = f"{result_dir}/{mode}_{ddim_step}_results.img" if mode == 'ddim' else f"{result_dir}/{mode}_results.img"
         
         fulldose.tofile(img_path)
+
+    def show_result_3d_loop(self, device, result_dir, mode='ddim', ddim_step=25):
+        img_shape = (256, 256, 256)
+        target_shape = (128, 128, 128)
+        files = "test_lines.txt"
+        scale = 1e4
+        with open(files) as f:
+            lines = f.readlines()
+        for line in lines:
+            full_dir, low_dir = line.split()
+            idx = full_dir[74:-8]
+            #full_dir = '/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/cropped/fulldose/fulldoseP-67292.img'
+            #low_dir = '/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/cropped/lowdose2/P-67292.img'
+            full_img = np.fromfile(full_dir, dtype=np.float32).reshape(img_shape) * scale
+            # full_img = rescale_intensity(full_img, out_range=(-1, 1))
+            full_img, invalid_z_list = preprocess_input(full_img)
+            low_img = np.fromfile(low_dir, dtype=np.float32).reshape(img_shape) * scale
+            low_img = np.delete(low_img, invalid_z_list, 0)
+            low_img /= 0.004*scale #5e3
+            low_img -= 0.5
+            low_img /= 0.5
+            # low_img = preprocess_input(low_img)
+            # low_img = rescale_intensity(low_img, out_range=(-1, 1))
+            low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(target_shape, low_img.shape)])
+            low_img = np.pad(low_img, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
+            low_img_neighbor_slices = sliding_window_view(low_img, window_shape=32, axis=0).transpose(0, 3, 1, 2)
+            low_img_neighbor_slices = np.split(low_img_neighbor_slices, low_img_neighbor_slices.shape[0], axis=0)
+            low_img_neighbor_slices = [torch.from_numpy(slice.copy()).cuda(device) for slice in low_img_neighbor_slices]
+            # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
+            # low_img_neighbor_slices = [torch.Tensor(low_img_neighbor_slices[i, :, :, :]).unsqueeze(0).cuda() for i in range(len(low_img_neighbor_slices))]
+            fulldose = []
+            if mode == 'ddpm':
+                print("Generating images...")
+                for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
+                    fulldose.append(self.net.sample(1, device, ax_feature=low_img_neighbor_slices[i], use_ema=False).squeeze(0, 1))
+            elif mode == 'ddim': 
+                # ddim_step = int(input('Input your sampling step for DDIM (default to 25): '))
+                print("Generating images...")
+                for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
+                    fulldose.append(self.net.ddim_sample(1, device, ax_feature=low_img_neighbor_slices[i], ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False).squeeze(0, 1))
+            fulldose = torch.stack(fulldose, dim=0)
+            fulldose = postprocess_output(fulldose.cpu().data.numpy())
+            fulldose = ndimage.zoom(fulldose, [shape/target_shape for target_shape, shape in zip(target_shape, full_img.shape)])
+
+            full_img = postprocess_output(full_img)
+            ssim = structural_similarity(full_img, fulldose, data_range=0.008*scale) #1e4
+            psnr = peak_signal_noise_ratio(full_img, fulldose, data_range=0.008*scale) #1e4
+            nrmse = normalized_root_mse(full_img, fulldose, normalization='euclidean')
+
+            print(f"for {idx}:\nSSIM: {ssim}\nPSNR: {psnr}\nNRMSE: {nrmse}")
+
+            if not os.path.exists(result_dir):
+                os.makedirs(result_dir)
+            img_path = f"{result_dir}/{mode}_{ddim_step}_{idx}_results.img" if mode == 'ddim' else f"{result_dir}/{mode}_{idx}_results.img"
+            
+            fulldose.tofile(img_path)
