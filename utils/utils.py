@@ -84,8 +84,8 @@ def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
     ssim = []
     nrmse = []
     for i in range(size_figure_grid_c): 
-        psnr.append(peak_signal_noise_ratio(predict_images[i], gt_images[i], data_range=1e4)) 
-        ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=1e4, channel_axis=2))
+        psnr.append(peak_signal_noise_ratio(predict_images[i], gt_images[i], data_range=2*maxn*scale)) 
+        ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=2*maxn*scale, channel_axis=2))
         nrmse.append(normalized_root_mse(rescale_intensity(predict_images[i]), rescale_intensity(gt_images[i]), normalization='euclidean'))
     table.add_row(['PSNR', f"{psnr[0]:.3f}", f"{psnr[1]:.3f}", f"{psnr[2]:.3f}", f"{psnr[3]:.3f}"])
     table.add_row(['SSIM', f"{ssim[0]:.3f}", f"{ssim[1]:.3f}", f"{ssim[2]:.3f}", f"{ssim[3]:.3f}"])
