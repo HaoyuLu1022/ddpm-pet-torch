@@ -51,18 +51,18 @@ def postprocess_output(x):
     return x
 
 def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
-    test_images = net.ddim_sample(len(ax_feature), device, ax_feature=ax_feature, use_ema=False, ddim_step=25, eta=0, simple_var=False)
+    test_images = [net.ddim_sample(1, device, ax_feature=ax_feature[i], use_ema=False, ddim_step=25, eta=0, simple_var=False).squeeze(0) for i in range(len(ax_feature))]
 
     size_figure_grid_r = 3
     size_figure_grid_c = 4
     fig, ax = plt.subplots(size_figure_grid_r, size_figure_grid_c, figsize=(10, 10), constrained_layout=True)
     low_imgs = [
-        postprocess_output(np.expand_dims((ax_feature[i][15]).cpu().data.numpy(), axis=0).transpose(2, 1, 0)) for i in range(ax_feature.shape[0])]
+        postprocess_output(np.expand_dims((ax_feature[i][0][ax_feature.shape[1]//2]).cpu().data.numpy(), axis=0)) for i in range(ax_feature.shape[0])]
     predict_images = [
-        postprocess_output(test_images[i].cpu().data.numpy().transpose(2, 1, 0)) for i in range(size_figure_grid_c)
+        postprocess_output(test_images[i].cpu().data.numpy()) for i in range(size_figure_grid_c)
     ]
     gt_images = [
-        postprocess_output(gt[i].copy().transpose(2, 1, 0)) for i in range(size_figure_grid_c)
+        postprocess_output(gt[i].copy()) for i in range(size_figure_grid_c)
     ]
     for i, j in itertools.product(range(size_figure_grid_r), range(size_figure_grid_c)):
         ax[i, j].get_xaxis().set_visible(False)
