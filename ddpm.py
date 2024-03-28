@@ -11,6 +11,7 @@ from skimage.metrics import structural_similarity, normalized_root_mse, peak_sig
 from skimage.exposure import rescale_intensity
 from prettytable import PrettyTable
 from tqdm import tqdm
+import math
 
 from nets import (GaussianDiffusion, UNet, generate_cosine_schedule,
                   generate_linear_schedule)
@@ -43,6 +44,7 @@ class Diffusion(object):
         #   没有GPU可以设置成False
         #-------------------------------#
         "cuda"              : True,
+        "guide_channels"    : 32,
     }
 
     #---------------------------------------------------#
@@ -70,7 +72,7 @@ class Diffusion(object):
                 self.schedule_high * 1000 / self.num_timesteps,
             )
             
-        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=32, base_channels=self.channel, return_feat=None), self.input_shape, 1, betas=betas)
+        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=self.guide_channels, base_channels=self.channel), self.input_shape, 1, betas=betas)
 
         device      = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net.load_state_dict(torch.load(self.model_path, map_location=device))
@@ -177,7 +179,7 @@ class Diffusion(object):
         plt.savefig(plt_path)
         plt.close('all')  #避免内存泄漏
 
-    def show_result_3d(self, device, result_dir, mode='ddim'):
+    def show_result_3d(self, device, result_dir, guide_channels, mode='ddim'):
         img_shape = (256, 256, 256)
         target_shape = (128, 128, 128)
         files = "test_lines.txt"
@@ -198,8 +200,9 @@ class Diffusion(object):
         # low_img = preprocess_input(low_img)
         # low_img = rescale_intensity(low_img, out_range=(-1, 1))
         low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(target_shape, low_img.shape)])
-        low_img = np.pad(low_img, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
-        low_img_neighbor_slices = sliding_window_view(low_img, window_shape=32, axis=0).transpose(0, 3, 1, 2)
+        if guide_channels > 1: 
+            low_img = np.pad(low_img, ((math.ceil((guide_channels-1)/2), math.floor((guide_channels-1)/2)), (0, 0), (0, 0)), mode='constant', constant_values=0)
+        low_img_neighbor_slices = sliding_window_view(low_img, window_shape=guide_channels, axis=0).transpose(0, 3, 1, 2)
         low_img_neighbor_slices = np.split(low_img_neighbor_slices, low_img_neighbor_slices.shape[0], axis=0)
         low_img_neighbor_slices = [torch.from_numpy(slice.copy()).cuda(device) for slice in low_img_neighbor_slices]
         # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
@@ -231,7 +234,7 @@ class Diffusion(object):
         
         fulldose.tofile(img_path)
 
-    def show_result_3d_loop(self, device, result_dir, mode='ddim', ddim_step=25):
+    def show_result_3d_loop(self, device, result_dir, guide_channels, mode='ddim', ddim_step=25):
         img_shape = (256, 256, 256)
         target_shape = (128, 128, 128)
         files = "test_lines.txt"
@@ -254,8 +257,9 @@ class Diffusion(object):
             # low_img = preprocess_input(low_img)
             # low_img = rescale_intensity(low_img, out_range=(-1, 1))
             low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(target_shape, low_img.shape)])
-            low_img = np.pad(low_img, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
-            low_img_neighbor_slices = sliding_window_view(low_img, window_shape=32, axis=0).transpose(0, 3, 1, 2)
+            if guide_channels > 1: 
+                low_img = np.pad(low_img, ((math.ceil((guide_channels-1)/2), math.floor((guide_channels-1)/2)), (0, 0), (0, 0)), mode='constant', constant_values=0)
+            low_img_neighbor_slices = sliding_window_view(low_img, window_shape=guide_channels, axis=0).transpose(0, 3, 1, 2)
             low_img_neighbor_slices = np.split(low_img_neighbor_slices, low_img_neighbor_slices.shape[0], axis=0)
             low_img_neighbor_slices = [torch.from_numpy(slice.copy()).cuda(device) for slice in low_img_neighbor_slices]
             # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)

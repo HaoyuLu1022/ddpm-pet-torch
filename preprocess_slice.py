@@ -5,17 +5,19 @@ import scipy.ndimage as ndimage
 from numpy.lib.stride_tricks import sliding_window_view
 import multiprocessing as mp
 from tqdm import tqdm
+import math
 
 from utils.utils import cvtColor, preprocess_input
 
 img_shape = (256, 256, 256)
 target_shape = (128, 128, 128)
+ax_channel_num = 1
 files = "train_lines.txt"
 scale = 1e4
-full_save_dir = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices_12s/fulldose"
+full_save_dir = f"/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices_{ax_channel_num}/fulldose"
 if not os.path.exists(full_save_dir):
     os.makedirs(full_save_dir)
-low_save_dir = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices_12s/lowdose"
+low_save_dir = f"/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices_{ax_channel_num}/lowdose"
 if not os.path.exists(low_save_dir):
     os.makedirs(low_save_dir)
 with open(files) as f:
@@ -36,8 +38,9 @@ def slice_processing(line):
     # low_img = preprocess_input(low_img)
     low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(target_shape, low_img.shape)])
     # low_img_slices = np.split(low_img, low_img.shape[2], axis=2)
-    low_img = np.pad(low_img, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
-    low_img_neighbor_slices = sliding_window_view(low_img, window_shape=32, axis=0).transpose(0, 3, 1, 2)
+    if ax_channel_num > 1: 
+        low_img = np.pad(low_img, ((math.ceil((ax_channel_num-1)/2), math.floor((ax_channel_num-1)/2)), (0, 0), (0, 0)), mode='constant', constant_values=0)
+    low_img_neighbor_slices = sliding_window_view(low_img, window_shape=ax_channel_num, axis=0).transpose(0, 3, 1, 2)
     # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
     low_img_neighbor_slices = [low_img_neighbor_slices[i, :, :, :] for i in range(len(low_img_neighbor_slices))]
 

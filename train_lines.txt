@@ -1,200 +1,200 @@
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68713.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67292.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68848.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-48712.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68872.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-64414.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68865.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68927.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68938.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68851.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67315.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69022.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68964.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-18484.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68969.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68974.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68896.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-46434.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68920.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68955.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68858.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68958.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68993.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68834.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68988.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-52271.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-33985.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68783.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68778.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68971.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68968.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68940.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67090.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-68701.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68816.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68786.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-99999.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68801.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67504.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68869.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67290.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68880.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-57526.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68894.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69024.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68805.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68879.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67038.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68797.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69026.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68893.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68989.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68891.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68707.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-34347.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-66317.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-49142.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68911.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-62151.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68877.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68718.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68952.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68956.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68914.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68853.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68888.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-66173.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68802.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68716.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69001.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68961.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68855.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-64943.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68881.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69023.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68991.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-50385.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67325.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68839.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68986.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68886.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68867.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68843.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68999.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-50994.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68807.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68933.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68857.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68784.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68859.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68837.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68720.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68838.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68860.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68887.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68883.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68706.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-65730.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68912.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68906.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67114.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68897.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68861.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68954.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68864.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68844.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68916.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68977.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68941.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68965.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68967.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-26527.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-68704.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68870.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68871.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68895.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69710.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67646.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68862.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68909.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67198.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68850.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68990.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68715.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68878.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68898.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69021.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68918.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68884.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68866.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-65657.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68794.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68808.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68841.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68921.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68919.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68835.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-68703.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69016.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68815.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68811.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69018.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68900.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68915.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68800.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68826.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68982.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68995.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68939.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68932.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68992.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-34467.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68824.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67358.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68963.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68931.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68852.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68846.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68803.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68930.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68821.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68845.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69709.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68926.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68994.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68822.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68953.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67297.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-68702.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68966.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-66100.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68997.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-69708.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68923.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68868.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-23758.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-65914.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68985.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68809.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68951.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68856.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68717.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68970.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-67026.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68929.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68812.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-99998.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68945.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68962.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68806.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-65507.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68810.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68798.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68928.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68799.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68943.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68924.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68905.img
-/mnt/haoyu/cropped/fulldose1/fulldoseP-68925.img
-/mnt/haoyu/cropped/fulldose2/fulldoseP-56535.img
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68703_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68703_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-26527_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-26527_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68962_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68962_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68923_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68923_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68967_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68967_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68821_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68821_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68838_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68838_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68804_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68804_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68904_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68904_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68880_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68880_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68835_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68835_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69021_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69021_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69710_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69710_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68954_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68954_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68969_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68969_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68785_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68785_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68863_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68863_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68870_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68870_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69026_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69026_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68992_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68992_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68985_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68985_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68856_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68856_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68975_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68975_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68836_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68836_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68882_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68882_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68932_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68932_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68707_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68707_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68989_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68989_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68933_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68933_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68966_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68966_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-52271_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-52271_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-49142_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-49142_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69002_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69002_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68911_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68911_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68884_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68884_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68928_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68928_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67315_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67315_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-59073_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-59073_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68984_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68984_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-65730_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-65730_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69024_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69024_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68810_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68810_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68851_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68851_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68845_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68845_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68865_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68865_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68950_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68950_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-66317_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-66317_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68816_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68816_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68914_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68914_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-64943_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-64943_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68826_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68826_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68920_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68920_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-23758_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-23758_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68963_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68963_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68993_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68993_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68968_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68968_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68944_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68944_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68905_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68905_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68814_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68814_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-42771_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-42771_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69001_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69001_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68898_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68898_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68979_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68979_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68921_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68921_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68834_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68834_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68889_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68889_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-65914_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-65914_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-34347_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-34347_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68971_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68971_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68900_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68900_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68796_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68796_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68956_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68956_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68820_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68820_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68945_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68945_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68930_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68930_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68883_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68883_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69022_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69022_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68718_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68718_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68925_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68925_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68832_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68832_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68808_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68808_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68779_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68779_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68926_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68926_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69016_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69016_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68843_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68843_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68794_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68794_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68916_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68916_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68953_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68953_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68970_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68970_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67038_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67038_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68798_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68798_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-56535_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-56535_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68800_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68800_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68716_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68716_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-48712_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-48712_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68717_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68717_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68801_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68801_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68833_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68833_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68822_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68822_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-18484_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-18484_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68952_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68952_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68855_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68855_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68848_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68848_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68998_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68998_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68841_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68841_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68802_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68802_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68896_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68896_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68805_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68805_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68781_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68781_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68860_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68860_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68919_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68919_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68887_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68887_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68909_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68909_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68999_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68999_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68974_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68974_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68811_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68811_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68812_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68812_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68839_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68839_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68955_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68955_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69025_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69025_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68803_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68803_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68852_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68852_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68931_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68931_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68786_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68786_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68929_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68929_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-33985_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-33985_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68815_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68815_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68842_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68842_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68943_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68943_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68861_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68861_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68824_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68824_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68807_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68807_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68960_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68960_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-63290_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-63290_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67065_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67065_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68720_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68720_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68864_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68864_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68862_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68862_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68713_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68713_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69709_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69709_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68941_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68941_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67297_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67297_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67198_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67198_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68844_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68844_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68857_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68857_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-65657_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-65657_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68702_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68702_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68924_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68924_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68938_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68938_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68885_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68885_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68879_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68879_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68935_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68935_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68988_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68988_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68701_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68701_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69023_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69023_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68908_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68908_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68878_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68878_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68791_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68791_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68784_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68784_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-66100_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-66100_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68877_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68877_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67504_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67504_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68783_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68783_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68959_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68959_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68869_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68869_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68937_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68937_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67646_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67646_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68895_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68895_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68987_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68987_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69708_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69708_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68912_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68912_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-69018_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-69018_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68939_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68939_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68958_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68958_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68866_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68866_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68809_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68809_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68964_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68964_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68990_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68990_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68927_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68927_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67090_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67090_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68893_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68893_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68797_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68797_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-34467_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-34467_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68918_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68918_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68872_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68872_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67277_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67277_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68961_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68961_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68891_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68891_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68906_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68906_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67026_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67026_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68991_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68991_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-67114_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-67114_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-65413_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-65413_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68871_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68871_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-65507_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-65507_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68888_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68888_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68867_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68867_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68846_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68846_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68868_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68868_5_3.dat
+/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111/P-68981_5_3.dat /media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111/P-68981_5_3.dat

@@ -9,6 +9,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 import scipy.ndimage as ndimage
 from numpy.lib.stride_tricks import sliding_window_view
+import math
 
 from nets import (GaussianDiffusion, UNet, generate_cosine_schedule,
                   generate_linear_schedule)
@@ -17,7 +18,7 @@ from utils.dataloader import Diffusion_dataset_collate, DiffusionDataset
 from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config, preprocess_input
 from utils.utils_fit import fit_one_epoch
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 # os.environ['NVIDIA_P2P_DISABLE'] = '1'
 # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:5120"
 
@@ -53,7 +54,7 @@ if __name__ == "__main__":
     #   此处使用的是整个模型的权重，因此是在train.py进行加载的。
     #   如果想要让模型从0开始训练，则设置model_path = ''。
     #---------------------------------------------------------------------#
-    diffusion_model_path    = "logs/loss_2024_03_18_14_51_27/Diffusion_Epoch180-GLoss0.0020.pth" # "../ddpm-pet-torch-logs/loss_2024_03_10_23_42_17/Diffusion_Epoch500-GLoss0.0018.pth"
+    diffusion_model_path    = "model_weights/Diffusion_Flower_mod.pth" # "../ddpm-pet-torch-logs/loss_2024_03_10_23_42_17/Diffusion_Epoch500-GLoss0.0018.pth"
     #---------------------------------------------------------------------#
     #   卷积通道数的设置，显存不够时可以降低，如64
     #---------------------------------------------------------------------#
@@ -76,7 +77,7 @@ if __name__ == "__main__":
     #   训练参数设置
     #------------------------------#
     Init_Epoch      = 0
-    Epoch           = 250
+    Epoch           = 300
     batch_size      = 6
     
     #------------------------------------------------------------------#
@@ -114,7 +115,7 @@ if __name__ == "__main__":
     #                   开启后会加快数据读取速度，但是会占用更多内存
     #                   内存较小的电脑可以设置为2或者0  
     #------------------------------------------------------------------#
-    num_workers         = 14
+    num_workers         = 10
     
     #------------------------------------------#
     #   获得图片路径
@@ -148,7 +149,8 @@ if __name__ == "__main__":
     #------------------------------------------#
     #   Diffusion网络
     #------------------------------------------#
-    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=32, base_channels=channel, return_feat=None), model_input_shape, 1, betas=betas)
+    ax_channel_num = 1
+    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=ax_channel_num, base_channels=channel), model_input_shape, 1, betas=betas)
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作 <- 
@@ -270,8 +272,9 @@ if __name__ == "__main__":
         test_low /= 0.5
         # test_low = preprocess_input(test_low)
         test_low = ndimage.zoom(test_low, [t_shape/img_shape for t_shape, img_shape in zip(target_shape, test_low.shape)])
-        test_low = np.pad(test_low, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
-        test_low_list = sliding_window_view(test_low, window_shape=32, axis=0).transpose(0, 3, 1, 2)
+        if ax_channel_num > 1: 
+            test_low = np.pad(test_low, ((math.ceil((ax_channel_num-1)/2), math.floor((ax_channel_num-1)/2)), (0, 0), (0, 0)), mode='constant', constant_values=0)
+        test_low_list = sliding_window_view(test_low, window_shape=ax_channel_num, axis=0).transpose(0, 3, 1, 2)
         # test_low_list = np.concatenate([np.repeat(np.expand_dims(test_low_list[0, :, :, :], axis=0), 16, axis=0), test_low_list, np.repeat(np.expand_dims(test_low_list[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
         test_low_list = [test_low_list[i, :, :, :] for i in range(len(test_low_list))]
         test_low = torch.stack([torch.Tensor(test_low_list[i].copy()) for i in range(0, len(test_low_list), len(test_low_list)//4)], dim=0)
