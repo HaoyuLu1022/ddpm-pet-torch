@@ -45,8 +45,13 @@ class GaussianDiffusion(nn.Module):
         self.num_classes    = num_classes
 
         # l1或者l2损失
-        if loss_type not in ["l1", "l2"]:
+        if loss_type not in ["l1", "l2", "v-pred", "pl"]:
             raise ValueError("__init__() got unknown loss type")
+        
+        if loss_type == "pl":
+            self.perceptual_model = deepcopy(model)
+            self.perceptual_model.requires_grad_(False)
+            self.perceptual_model.eval()
 
         self.loss_type      = loss_type
         self.num_timesteps  = len(betas)
@@ -130,6 +135,11 @@ class GaussianDiffusion(nn.Module):
         
         return diffusion_sequence
 
+    def predict_xstart_from_eps(self, x_t, t, eps):
+        return (
+                x_t / extract(self.sqrt_alphas_cumprod, t, x_t.shape) - torch.sqrt(1./extract(self.alphas_cumprod, t, x_t.shape)-1) * eps
+        )
+
     @torch.no_grad()
     def ddim_sample(self, batch_size, device, y=None, use_ema=True, ax_feature=None, ddim_step=20, eta=0, simple_var=True):
         if y is not None and batch_size != len(y):
@@ -176,6 +186,18 @@ class GaussianDiffusion(nn.Module):
             loss = F.l1_loss(estimated_noise, noise)
         elif self.loss_type == "l2":
             loss = F.mse_loss(estimated_noise, noise)
+        elif self.loss_type == "pl": # Here `estimated_noise` is eps
+            estimated_noise = self.model(perturbed_x, t, y, ax_feature)
+            estimated_x_0 = self.predict_xstart_from_eps(perturbed_x, t, estimated_noise)
+
+            tt = torch.randint(0, self.num_timesteps, (x.shape[0],), device=x.device)
+            x_tt = self.perturb_x(x, tt, noise)
+            estimated_x_tt = self.perturb_x(estimated_x_0, tt, estimated_noise)
+
+            feat = self.perceptual_model(x_tt, tt, y, ax_feature, return_feat='mid')
+            estimated_feat = self.perceptual_model(estimated_x_tt, tt, y, ax_feature, return_feat='mid')
+
+            loss = F.mse_loss(estimated_feat, feat).requires_grad_(True) + 10 * F.mse_loss(estimated_noise, noise)
         return loss
 
     def forward(self, x, y=None, ax_feature=None):

@@ -150,7 +150,7 @@ if __name__ == "__main__":
     #   Diffusion网络
     #------------------------------------------#
     ax_channel_num = 1
-    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=ax_channel_num, base_channels=channel), model_input_shape, 1, betas=betas)
+    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=ax_channel_num, base_channels=channel), model_input_shape, 1, betas=betas, loss_type="pl")
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作 <- 

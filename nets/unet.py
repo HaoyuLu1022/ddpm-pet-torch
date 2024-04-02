@@ -322,7 +322,7 @@ class UNet(nn.Module):
         self.out_norm = get_norm(norm, base_channels, num_groups)
         self.out_conv = nn.Conv2d(base_channels, img_channels, 3, padding=1)
     
-    def forward(self, x, time=None, y=None, ax_feature=None):
+    def forward(self, x, time=None, y=None, ax_feature=None, return_feat='mid'):
         # 是否对输入进行padding
         ip = self.initial_pad
         if ip != 0:
@@ -363,16 +363,16 @@ class UNet(nn.Module):
                 x = layer(x, ax_feature, time_emb, y)
             # else:
             #     x = layer(x)
-        
-        # 上采样并进行特征融合
-        for layer in self.ups:
-            if isinstance(layer, ResidualBlock):
-                x = torch.cat([x, skips.pop()], dim=1)
-            x = layer(x, time_emb, y)
+        if return_feat == None: 
+            # 上采样并进行特征融合
+            for layer in self.ups:
+                if isinstance(layer, ResidualBlock):
+                    x = torch.cat([x, skips.pop()], dim=1)
+                x = layer(x, time_emb, y)
 
-        # 上采样并进行特征融合
-        x = self.activation(self.out_norm(x))
-        x = self.out_conv(x)
+            # 上采样并进行特征融合
+            x = self.activation(self.out_norm(x))
+            x = self.out_conv(x)
         
         if self.initial_pad != 0:
             return x[:, :, ip:-ip, ip:-ip]
