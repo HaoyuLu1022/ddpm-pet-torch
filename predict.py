@@ -31,6 +31,9 @@ if __name__ == "__main__":
     # save_path_1x1 = f"{save_path}/predict_1x1_results.png"
 
     ddpm = Diffusion(model_path=model_path, guide_channels=ax_channel_num)
+    batch_size = 4
+    torch.manual_seed(114514)
+    init = torch.randn(batch_size, 1, *(128, 128), device=torch.device("cuda"))
     while True:
         mode = input('Choose generation mode (ddpm, ddim, or press Q to quit): ')
         if mode == 'q' or mode == 'Q':
@@ -39,7 +42,7 @@ if __name__ == "__main__":
         # ddpm.generate_1x1_image(save_path_1x1, condition=low_slice)
         start = time.perf_counter()
         # ddpm.show_result(test_low.device, save_path, test_full_list, test_low, mode)
-        ddpm.show_result_3d(torch.device('cuda'), save_path, ax_channel_num, mode) 
+        ddpm.show_result_3d(batch_size, torch.device('cuda'), save_path, ax_channel_num, mode, init) 
         end = time.perf_counter()
         print(f"Generation done, consuming {(end-start)}s.")
         

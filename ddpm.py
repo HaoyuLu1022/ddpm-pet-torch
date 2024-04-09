@@ -179,11 +179,12 @@ class Diffusion(object):
         plt.savefig(plt_path)
         plt.close('all')  #避免内存泄漏
 
-    def show_result_3d(self, device, result_dir, guide_channels, mode='ddim'):
+    def show_result_3d(self, batch_size, device, result_dir, mode='ddim', init=None):
         img_shape = (256, 256, 256)
         target_shape = (128, 128, 128)
         files = "test_lines.txt"
         scale = 1e4
+        maxn = 0.004
         with open(files) as f:
            lines = f.readlines()
         full_dir, low_dir = lines[0].split()
@@ -194,43 +195,54 @@ class Diffusion(object):
         full_img, invalid_z_list = preprocess_input(full_img)
         low_img = np.fromfile(low_dir, dtype=np.float32).reshape(img_shape) * scale
         low_img = np.delete(low_img, invalid_z_list, 0)
-        low_img /= 0.004*scale #5e3
+        low_img /= maxn*scale #5e3
         low_img -= 0.5
         low_img /= 0.5
         # low_img = preprocess_input(low_img)
         # low_img = rescale_intensity(low_img, out_range=(-1, 1))
         low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(target_shape, low_img.shape)])
-        if guide_channels > 1: 
-            low_img = np.pad(low_img, ((math.ceil((guide_channels-1)/2), math.floor((guide_channels-1)/2)), (0, 0), (0, 0)), mode='constant', constant_values=0)
-        low_img_neighbor_slices = sliding_window_view(low_img, window_shape=guide_channels, axis=0).transpose(0, 3, 1, 2)
+        low_img = np.pad(low_img, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
+        low_img_neighbor_slices = sliding_window_view(low_img, window_shape=32, axis=0).transpose(0, 3, 1, 2)
         low_img_neighbor_slices = np.split(low_img_neighbor_slices, low_img_neighbor_slices.shape[0], axis=0)
-        low_img_neighbor_slices = [torch.from_numpy(slice.copy()).cuda(device) for slice in low_img_neighbor_slices]
+        low_img_neighbor_slices = [torch.from_numpy(slice.copy()).to(device) for slice in low_img_neighbor_slices]
         # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
         # low_img_neighbor_slices = [torch.Tensor(low_img_neighbor_slices[i, :, :, :]).unsqueeze(0).cuda() for i in range(len(low_img_neighbor_slices))]
         fulldose = []
         if mode == 'ddpm':
             print("Generating images...")
-            for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
-                fulldose.append(self.net.sample(1, device, ax_feature=low_img_neighbor_slices[i], use_ema=False).squeeze(0, 1))
+            for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
+                fulldose.append(self.net.sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), use_ema=False, init=init).squeeze(0, 1))
         elif mode == 'ddim': 
             ddim_step = int(input('Input your sampling step for DDIM (default to 25): '))
             print("Generating images...")
-            for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
-                fulldose.append(self.net.ddim_sample(1, device, ax_feature=low_img_neighbor_slices[i], ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False).squeeze(0, 1))
-        fulldose = torch.stack(fulldose, dim=0)
+            for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
+                fulldose.append(self.net.ddim_sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False, init=init).squeeze(0, 1))
+        elif mode == 'mixed': 
+            ddim_step = int(input('Input your sampling step for DDIM (default to 25): '))
+            mix_int = int(input("Input the mixing interval (default to 5): "))
+            print("Generating images...")
+            for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
+                fulldose.append(self.net.mixed_sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False, init=init, mix_interval=mix_int).squeeze(0, 1))
+        fulldose = torch.cat(fulldose, dim=0)
         fulldose = postprocess_output(fulldose.cpu().data.numpy())
         fulldose = ndimage.zoom(fulldose, [shape/target_shape for target_shape, shape in zip(target_shape, full_img.shape)])
 
         full_img = postprocess_output(full_img)
-        ssim = structural_similarity(full_img, fulldose, data_range=0.008*scale) #1e4
-        psnr = peak_signal_noise_ratio(full_img, fulldose, data_range=0.008*scale) #1e4
+        ssim = structural_similarity(full_img, fulldose, data_range=2*maxn*scale) #1e4
+        psnr = peak_signal_noise_ratio(full_img, fulldose, data_range=2*maxn*scale) #1e4
         nrmse = normalized_root_mse(full_img, fulldose, normalization='euclidean')
 
         print(f"SSIM: {ssim}\nPSNR: {psnr}\nNRMSE: {nrmse}")
 
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
-        img_path = f"{result_dir}/{mode}_{ddim_step}_results.img" if mode == 'ddim' else f"{result_dir}/{mode}_results.img"
+        if mode == "ddim": 
+            img_path = f"{result_dir}/{mode}_{ddim_step}_results.img"
+        elif mode == "mixed": 
+            img_path = f"{result_dir}/{mode}_{ddim_step}_{mix_int}_results.img"
+        else: 
+            img_path = f"{result_dir}/{mode}_results.img"
+        # img_path = f"{result_dir}/{mode}_{ddim_step}_results.img" if mode == 'ddim' or mode == 'mixed' else f"{result_dir}/{mode}_results.img"
         
         fulldose.tofile(img_path)
 
