@@ -322,7 +322,7 @@ class UNet(nn.Module):
         self.out_norm = get_norm(norm, base_channels, num_groups)
         self.out_conv = nn.Conv2d(base_channels, img_channels, 3, padding=1)
     
-    def forward(self, x, time=None, y=None, ax_feature=None, return_feat='mid'):
+    def forward(self, x, time=None, y=None, ax_feature=None, return_feat=None):
         # 是否对输入进行padding
         ip = self.initial_pad
         if ip != 0:
