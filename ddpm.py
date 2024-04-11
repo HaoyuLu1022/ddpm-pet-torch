@@ -76,9 +76,20 @@ class Diffusion(object):
         self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=self.guide_channels, base_channels=self.channel), self.input_shape, 1, betas=betas, loss_type=self.loss_type)
 
         device      = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.net.load_state_dict(torch.load(self.model_path, map_location=device))
-        self.net    = self.net.eval()
-        print('{} model loaded.'.format(self.model_path))
+        # self.net.load_state_dict(torch.load(self.model_path, map_location=device))
+        model_dict = self.net.state_dict()
+        pretrained_dict = torch.load(self.model_path, map_location=device)
+        load_key, no_load_key, temp_dict = [], [], {}
+        for k, v in pretrained_dict.items():
+            if k in model_dict.keys() and np.shape(model_dict[k]) == np.shape(v):
+                temp_dict[k] = v
+                load_key.append(k)
+            else:
+                no_load_key.append(k)
+        model_dict.update(temp_dict)
+        self.net.load_state_dict(model_dict)
+        print("\nSuccessful Load Key:", str(load_key)[:500], "……\nSuccessful Load Key Num:", len(load_key))
+        print("\nFail To Load Key:", str(no_load_key)[:500], "……\nFail To Load Key num:", len(no_load_key))
 
         if self.cuda:
             self.net = self.net.cuda()
