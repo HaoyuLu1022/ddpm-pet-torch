@@ -14,7 +14,7 @@ from ddpm import Diffusion
 from utils.utils import preprocess_input
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-ax_channel_num = 1
+ax_channel_num = 32
 
 if __name__ == "__main__":
     model_path = input("Please specify the model weight directory: ")
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     torch.manual_seed(114514)
     init = torch.randn(batch_size, 1, *(128, 128), device=torch.device("cuda"))
     while True:
-        mode = input('Choose generation mode (ddpm, ddim, or press Q to quit): ')
+        mode = input('Choose generation mode (ddpm, ddim, dpm, or press Q to quit): ') # mixed_sample currently unavailable
         if mode == 'q' or mode == 'Q':
             print("Generation exited. ")
             break

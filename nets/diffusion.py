@@ -6,6 +6,8 @@ import torch.nn.functional as F
 from functools import partial
 from copy import deepcopy
 
+from utils.dpm_solver_pytorch import model_wrapper, NoiseScheduleVP, DPM_Solver
+
 
 def extract(a, t, x_shape):
     b, *_ = t.shape
@@ -170,6 +172,21 @@ class GaussianDiffusion(nn.Module):
         return x.cpu().detach()
     
     @torch.no_grad()
+    def dpm_sample(self, batch_size, device, y=None, use_ema=True, ax_feature=None, dpm_step=20, init=None):
+        if y is not None and batch_size != len(y):
+            raise ValueError("sample batch size different from length of given y")
+        
+        x = torch.randn(batch_size, self.img_channels, *self.img_size, device=device) if init == None else init
+
+        noise_schedule = NoiseScheduleVP('discrete', self.betas, self.alphas_cumprod)
+        model = model_wrapper(self.ema_model if use_ema else self.model, noise_schedule, guidance_type='classifier-free', condition=ax_feature, model_type='noise')
+
+        sampler = DPM_Solver(model, noise_schedule)
+        x = sampler.sample(x, steps=dpm_step)
+
+        return x.cpu().detach()
+    
+    @torch.no_grad()
     def mixed_sample(self, batch_size, device, y=None, use_ema=True, ax_feature=None, ddim_step=20, eta=0, simple_var=False, init=None, mix_interval=5):
         if y is not None and batch_size != len(y):
             raise ValueError("sample batch size different from length of given y")
@@ -203,8 +220,8 @@ class GaussianDiffusion(nn.Module):
                 t_batch = torch.tensor([cur_t-1], device=device).repeat(batch_size)
                 x = self.remove_noise(x, t_batch, y, use_ema, ax_feature)
                 cnt = 0
-                if cur_t-1 > 0: # unsure
-                    x += torch.sqrt(1 - alpha_bar / alpha_bar_prev) * torch.rand_like(x) if simple_var else torch.sqrt(var) * torch.rand_like(x)
+                # if cur_t-1 > 0: # unsure
+                #     x += torch.sqrt(1 - alpha_bar / alpha_bar_prev) * torch.rand_like(x) if simple_var else torch.sqrt(var) * torch.rand_like(x)
 
         return x.cpu().detach()
 

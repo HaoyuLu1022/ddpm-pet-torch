@@ -187,7 +187,7 @@ class GuidedResidualBlock(nn.Module):
         self.residual_connection    = nn.Conv2d(in_channels, out_channels, 1) if in_channels != out_channels else nn.Identity()
         self.attention              = nn.Identity() if not use_attention else AttentionBlock(out_channels, norm, num_groups)
     
-    def forward(self, x, ax_feature, time_emb=None, y=None):
+    def forward(self, x, time_emb, ax_feature, y=None):
         if ax_feature != None: 
             if ax_feature.shape[2] != x.shape[2]:
                 ax_feature = F.interpolate(ax_feature, size=(x.shape[2], x.shape[3]), mode='bilinear')
@@ -348,7 +348,7 @@ class UNet(nn.Module):
             if isinstance(layer, ResidualBlock): 
                 x = layer(x, time_emb, y)
             elif isinstance(layer, GuidedResidualBlock) and ax_feature is not None:
-                x = layer(x, ax_feature, time_emb, y)
+                x = layer(x, time_emb, ax_feature, y)
             else: 
                 x = layer(x, time_emb, y)
 
@@ -360,7 +360,7 @@ class UNet(nn.Module):
             if isinstance(layer, ResidualBlock): 
                 x = layer(x, time_emb, y)
             elif isinstance(layer, GuidedResidualBlock) and ax_feature is not None:
-                x = layer(x, ax_feature, time_emb, y)
+                x = layer(x, time_emb, ax_feature, y)
             # else:
             #     x = layer(x)
         if return_feat == None: 

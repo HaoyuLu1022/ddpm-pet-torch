@@ -179,7 +179,7 @@ class Diffusion(object):
         plt.savefig(plt_path)
         plt.close('all')  #避免内存泄漏
 
-    def show_result_3d(self, batch_size, device, result_dir, mode='ddim', init=None):
+    def show_result_3d(self, batch_size, device, result_dir, ax_channel_num, mode='ddim', init=None):
         img_shape = (256, 256, 256)
         target_shape = (128, 128, 128)
         files = "test_lines.txt"
@@ -188,8 +188,6 @@ class Diffusion(object):
         with open(files) as f:
            lines = f.readlines()
         full_dir, low_dir = lines[0].split()
-        #full_dir = '/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/cropped/fulldose/fulldoseP-67292.img'
-        #low_dir = '/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/cropped/lowdose2/P-67292.img'
         full_img = np.fromfile(full_dir, dtype=np.float32).reshape(img_shape) * scale
         # full_img = rescale_intensity(full_img, out_range=(-1, 1))
         full_img, invalid_z_list = preprocess_input(full_img)
@@ -201,8 +199,10 @@ class Diffusion(object):
         # low_img = preprocess_input(low_img)
         # low_img = rescale_intensity(low_img, out_range=(-1, 1))
         low_img = ndimage.zoom(low_img, [target_shape/img_shape for target_shape, img_shape in zip(target_shape, low_img.shape)])
-        low_img = np.pad(low_img, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
-        low_img_neighbor_slices = sliding_window_view(low_img, window_shape=32, axis=0).transpose(0, 3, 1, 2)
+        if ax_channel_num > 1:
+            low_img = np.pad(low_img, ((math.ceil((ax_channel_num-1)/2), math.floor((ax_channel_num-1)/2)), (0, 0), (0, 0)), mode='constant', constant_values=0)
+        # low_img = np.pad(low_img, ((16, 15), (0, 0), (0, 0)), mode='constant', constant_values=0)
+        low_img_neighbor_slices = sliding_window_view(low_img, window_shape=ax_channel_num, axis=0).transpose(0, 3, 1, 2)
         low_img_neighbor_slices = np.split(low_img_neighbor_slices, low_img_neighbor_slices.shape[0], axis=0)
         low_img_neighbor_slices = [torch.from_numpy(slice.copy()).to(device) for slice in low_img_neighbor_slices]
         # low_img_neighbor_slices = np.concatenate([np.repeat(np.expand_dims(low_img_neighbor_slices[0, :, :, :], axis=0), 16, axis=0), low_img_neighbor_slices, np.repeat(np.expand_dims(low_img_neighbor_slices[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
@@ -223,6 +223,11 @@ class Diffusion(object):
             print("Generating images...")
             for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
                 fulldose.append(self.net.mixed_sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False, init=init, mix_interval=mix_int).squeeze(0, 1))
+        elif mode == 'dpm':
+            dpm_step = int(input('Input your sampling step for DDIM (default to 20): '))
+            print("Generating images...")
+            for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
+                fulldose.append(self.net.dpm_sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), dpm_step=dpm_step, init=init).squeeze(0, 1))
         fulldose = torch.cat(fulldose, dim=0)
         fulldose = postprocess_output(fulldose.cpu().data.numpy())
         fulldose = ndimage.zoom(fulldose, [shape/target_shape for target_shape, shape in zip(target_shape, full_img.shape)])
@@ -240,6 +245,8 @@ class Diffusion(object):
             img_path = f"{result_dir}/{mode}_{ddim_step}_results.img"
         elif mode == "mixed": 
             img_path = f"{result_dir}/{mode}_{ddim_step}_{mix_int}_results.img"
+        elif mode == "dpm": 
+            img_path = f"{result_dir}/{mode}_{dpm_step}_results.img"
         else: 
             img_path = f"{result_dir}/{mode}_results.img"
         # img_path = f"{result_dir}/{mode}_{ddim_step}_results.img" if mode == 'ddim' or mode == 'mixed' else f"{result_dir}/{mode}_results.img"
