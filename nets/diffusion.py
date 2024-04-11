@@ -103,11 +103,11 @@ class GaussianDiffusion(nn.Module):
             )
 
     @torch.no_grad()
-    def sample(self, batch_size, device, y=None, use_ema=True, ax_feature=None):
+    def sample(self, batch_size, device, y=None, use_ema=True, ax_feature=None, init=None):
         if y is not None and batch_size != len(y):
             raise ValueError("sample batch size different from length of given y")
 
-        x = torch.randn(batch_size, self.img_channels, *self.img_size, device=device)
+        x = torch.randn(batch_size, self.img_channels, *self.img_size, device=device) if init == None else init
         
         for t in range(self.num_timesteps - 1, -1, -1):
             t_batch = torch.tensor([t], device=device).repeat(batch_size)

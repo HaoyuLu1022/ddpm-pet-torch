@@ -18,7 +18,7 @@ from utils.dataloader import Diffusion_dataset_collate, DiffusionDataset
 from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config, preprocess_input
 from utils.utils_fit import fit_one_epoch
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 # os.environ['NVIDIA_P2P_DISABLE'] = '1'
 # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:5120"
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     #   此处使用的是整个模型的权重，因此是在train.py进行加载的。
     #   如果想要让模型从0开始训练，则设置model_path = ''。
     #---------------------------------------------------------------------#
-    diffusion_model_path    = "model_weights/Diffusion_Flower_mod.pth" # "../ddpm-pet-torch-logs/loss_2024_03_10_23_42_17/Diffusion_Epoch500-GLoss0.0018.pth"
+    diffusion_model_path    = "logs/loss_2024_03_28_17_17_42/Diffusion_Epoch300-GLoss0.0026.pth"
     #---------------------------------------------------------------------#
     #   卷积通道数的设置，显存不够时可以降低，如64
     #---------------------------------------------------------------------#
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     #   训练参数设置
     #------------------------------#
     Init_Epoch      = 0
-    Epoch           = 300
+    Epoch           = 200
     batch_size      = 6
     
     #------------------------------------------------------------------#
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     #   Init_lr         模型的最大学习率
     #   Min_lr          模型的最小学习率，默认为最大学习率的0.01
     #------------------------------------------------------------------#
-    Init_lr             = 1e-5
+    Init_lr             = 1e-6
     Min_lr              = 1e-8
     #------------------------------------------------------------------#
     #   optimizer_type  使用到的优化器种类，可选的有adam、adamw
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   save_period     多少个epoch保存一次权值
     #------------------------------------------------------------------#
-    save_period         = 5 
+    save_period         = 5
     #------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     #------------------------------------------------------------------#
@@ -149,8 +149,8 @@ if __name__ == "__main__":
     #------------------------------------------#
     #   Diffusion网络
     #------------------------------------------#
-    ax_channel_num = 1
-    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=ax_channel_num, base_channels=channel), model_input_shape, 1, betas=betas, loss_type="pl")
+    ax_channel_num = 16
+    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=ax_channel_num, base_channels=channel), model_input_shape, 1, betas=betas)
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作 <- 
@@ -276,8 +276,9 @@ if __name__ == "__main__":
             test_low = np.pad(test_low, ((math.ceil((ax_channel_num-1)/2), math.floor((ax_channel_num-1)/2)), (0, 0), (0, 0)), mode='constant', constant_values=0)
         test_low_list = sliding_window_view(test_low, window_shape=ax_channel_num, axis=0).transpose(0, 3, 1, 2)
         # test_low_list = np.concatenate([np.repeat(np.expand_dims(test_low_list[0, :, :, :], axis=0), 16, axis=0), test_low_list, np.repeat(np.expand_dims(test_low_list[-1, :, :, :], axis=0), 15, axis=0)], axis=0)
-        test_low_list = [test_low_list[i, :, :, :] for i in range(len(test_low_list))]
-        test_low = torch.stack([torch.Tensor(test_low_list[i].copy()) for i in range(0, len(test_low_list), len(test_low_list)//4)], dim=0)
+        test_low_list = [torch.Tensor(test_low_list[i, :, :, :].copy()).unsqueeze(0) for i in range(0, len(test_low_list), len(test_low_list)//4)]
+        # test_low = torch.stack([torch.Tensor(test_low_list[i].copy()) for i in range(0, len(test_low_list), len(test_low_list)//4)], dim=0)
+        test_low = torch.stack(test_low_list)
         test_slices_dict = {
             "fulldose": test_full_list, 
             "lowdose": test_low

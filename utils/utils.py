@@ -57,12 +57,12 @@ def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
     size_figure_grid_c = 4
     fig, ax = plt.subplots(size_figure_grid_r, size_figure_grid_c, figsize=(10, 10), constrained_layout=True)
     low_imgs = [
-        postprocess_output(np.expand_dims((ax_feature[i][0][ax_feature.shape[1]//2]).cpu().data.numpy(), axis=0)) for i in range(ax_feature.shape[0])]
+        postprocess_output((ax_feature[i][0][ax_feature.shape[1]//2]).cpu().data.numpy()) for i in range(ax_feature.shape[0])]
     predict_images = [
-        postprocess_output(test_images[i].cpu().data.numpy()) for i in range(size_figure_grid_c)
+        postprocess_output(test_images[i][0].cpu().data.numpy()) for i in range(size_figure_grid_c)
     ]
     gt_images = [
-        postprocess_output(gt[i].copy()) for i in range(size_figure_grid_c)
+        postprocess_output(gt[i][0].copy()) for i in range(size_figure_grid_c)
     ]
     for i, j in itertools.product(range(size_figure_grid_r), range(size_figure_grid_c)):
         ax[i, j].get_xaxis().set_visible(False)
@@ -85,7 +85,7 @@ def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
     nrmse = []
     for i in range(size_figure_grid_c): 
         psnr.append(peak_signal_noise_ratio(predict_images[i], gt_images[i], data_range=2*maxn*scale)) 
-        ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=2*maxn*scale, channel_axis=2))
+        ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=2*maxn*scale))
         nrmse.append(normalized_root_mse(rescale_intensity(predict_images[i]), rescale_intensity(gt_images[i]), normalization='euclidean'))
     table.add_row(['PSNR', f"{psnr[0]:.3f}", f"{psnr[1]:.3f}", f"{psnr[2]:.3f}", f"{psnr[3]:.3f}"])
     table.add_row(['SSIM', f"{ssim[0]:.3f}", f"{ssim[1]:.3f}", f"{ssim[2]:.3f}", f"{ssim[3]:.3f}"])

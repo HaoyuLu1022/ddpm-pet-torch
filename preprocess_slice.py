@@ -11,7 +11,7 @@ from utils.utils import cvtColor, preprocess_input
 
 img_shape = (256, 256, 256)
 target_shape = (128, 128, 128)
-ax_channel_num = 1
+ax_channel_num = 16
 files = "train_lines.txt"
 scale = 1e4
 full_save_dir = f"/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices_{ax_channel_num}/fulldose"

@@ -14,7 +14,7 @@ from ddpm import Diffusion
 from utils.utils import preprocess_input
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-ax_channel_num = 32
+ax_channel_num = 16
 
 if __name__ == "__main__":
     model_path = input("Please specify the model weight directory: ")
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     # save_path_5x5 = f"{save_path}/predict_5x5_results.png"
     # save_path_1x1 = f"{save_path}/predict_1x1_results.png"
 
-    ddpm = Diffusion(model_path=model_path, guide_channels=ax_channel_num)
+    ddpm = Diffusion(model_path=model_path, guide_channels=ax_channel_num, loss_type="l2")
     batch_size = 4
     torch.manual_seed(114514)
     init = torch.randn(batch_size, 1, *(128, 128), device=torch.device("cuda"))

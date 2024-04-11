@@ -1,8 +1,8 @@
 import os
 from sklearn.model_selection import train_test_split
 
-full_path = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices_1/fulldose"
-low_path = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices_1/lowdose"
+full_path = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices_16/fulldose"
+low_path = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/slices_16/lowdose"
 
 if __name__ == "__main__":
     train_file = open('train_slices.txt', 'w')

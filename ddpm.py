@@ -45,6 +45,7 @@ class Diffusion(object):
         #-------------------------------#
         "cuda"              : True,
         "guide_channels"    : 32,
+        "loss_type"         : "l2",
     }
 
     #---------------------------------------------------#
@@ -72,7 +73,7 @@ class Diffusion(object):
                 self.schedule_high * 1000 / self.num_timesteps,
             )
             
-        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=self.guide_channels, base_channels=self.channel), self.input_shape, 1, betas=betas, loss_type="pl")
+        self.net    = GaussianDiffusion(UNet(1, condition=True, guide_channels=self.guide_channels, base_channels=self.channel), self.input_shape, 1, betas=betas, loss_type=self.loss_type)
 
         device      = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net.load_state_dict(torch.load(self.model_path, map_location=device))
