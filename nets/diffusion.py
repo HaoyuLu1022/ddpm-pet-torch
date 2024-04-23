@@ -181,8 +181,8 @@ class GaussianDiffusion(nn.Module):
         noise_schedule = NoiseScheduleVP('discrete', self.betas, self.alphas_cumprod)
         model = model_wrapper(self.ema_model if use_ema else self.model, noise_schedule, guidance_type='classifier-free', condition=ax_feature, model_type='noise')
 
-        sampler = DPM_Solver(model, noise_schedule)
-        x = sampler.sample(x, steps=dpm_step)
+        sampler = DPM_Solver(model, noise_schedule, correcting_x0_fn="dynamic_thresholding")
+        x = sampler.sample(x, steps=dpm_step, skip_type='time_uniform', method='multistep', denoise_to_zero=True, lower_order_final=True)
 
         return x.cpu().detach()
     

@@ -197,9 +197,11 @@ class Diffusion(object):
         files = "test_lines.txt"
         scale = 1e4
         maxn = 0.004
-        with open(files) as f:
-           lines = f.readlines()
-        full_dir, low_dir = lines[0].split()
+        # with open(files) as f:
+        #    lines = f.readlines()
+        # full_dir, low_dir = lines[0].split()
+        low_dir = '/Users/HalveLuve/Downloads/loss_2024_03_10_23_42_17/P-67292_5_3.dat'
+        full_dir = '/Users/HalveLuve/Downloads/loss_2024_03_10_23_42_17/P-67292_5_3_fulldose.dat'
         full_img = np.fromfile(full_dir, dtype=np.float32).reshape(img_shape) * scale
         # full_img = rescale_intensity(full_img, out_range=(-1, 1))
         full_img, invalid_z_list = preprocess_input(full_img)
@@ -236,7 +238,7 @@ class Diffusion(object):
             for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
                 fulldose.append(self.net.mixed_sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False, init=init, mix_interval=mix_int).squeeze(0, 1))
         elif mode == 'dpm':
-            dpm_step = int(input('Input your sampling step for DDIM (default to 20): '))
+            dpm_step = int(input('Input your sampling step for DPM (default to 20): '))
             print("Generating images...")
             for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
                 fulldose.append(self.net.dpm_sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), dpm_step=dpm_step, init=init).squeeze(0, 1))
