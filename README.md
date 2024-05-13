@@ -55,11 +55,8 @@ _defaults = {
 ddpm = Diffusion(model_path=model_path, guide_channels=ax_channel_num, loss_type="l2")
 ```
 
-3. 运行`predict.py`，终端会询问`model_path`、生成模式（DDPM、DDIM或DPM-Solver）、采样步数（针对DDIM和DPM-Solver）；输入后即可生成对应3维图像[^1]
+3. 运行`predict.py`，终端会询问`model_path`、生成模式（DDPM、DDIM或DPM-Solver）、采样步数（针对DDIM和DPM-Solver）；输入后即可生成对应3维图像[^1]，存储在`results/predict_out`路径下。
 
-   [^1]: 本项目开发时为了方便，默认对`test_lines.txt`中第一个路径对应的低剂量图像进行降噪。若有需要可以自行实现指定低剂量图像路径功能；或使用`ddpm.py`中的`show_result_3d_loop`函数，遍历所有`test_lines.txt`中的低剂量图像。
-
-   ，存储在`results/predict_out`路径下。
 
 ## 训练步骤
 1. 准备好lowdose和fulldose的3维图像数据集  
@@ -67,3 +64,6 @@ ddpm = Diffusion(model_path=model_path, guide_channels=ax_channel_num, loss_type
 3. 在`preprocess_slice.py`中修改作为条件的邻近切片数量（默认为32），指定切片存储路径，后运行即可得到切片后的数据集
 4. 在`slice_annotation.py`中修改切片数据集路径并运行，生成`train_slices.txt`，确保`train_slices.txt`内部是有文件路径内容的。  
 5. 运行`train.py`文件进行训练，训练过程中生成的图片可查看`results/loss_<对应训练时间>/train_out`文件夹下的图片（推荐只用于观察是否能生成正确图片，而不用于模型质量评估；质量评估尽量使用上述`predict.py`测试流程）。  
+
+[^1]: 本项目开发时为了方便，默认对`test_lines.txt`中第一个路径对应的低剂量图像进行降噪。若有需要可以自行实现指定低剂量图像路径功能；或使用`ddpm.py`中的`show_result_3d_loop`函数，遍历所有`test_lines.txt`中的低剂量图像。
+
