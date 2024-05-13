@@ -39,10 +39,15 @@ if __name__ == "__main__":
         if mode == 'q' or mode == 'Q':
             print("Generation exited. ")
             break
+        # if mode != 'ddpm':
+        #     step = int(input('Input your step for faster sampling (default to 25): '))
+        # else: 
+        #     step = None
         # ddpm.generate_1x1_image(save_path_1x1, condition=low_slice)
         start = time.perf_counter()
         # ddpm.show_result(test_low.device, save_path, test_full_list, test_low, mode)
         ddpm.show_result_3d(batch_size, torch.device('cuda'), save_path, ax_channel_num, mode, init) 
+        # ddpm.show_result_3d_loop(batch_size, torch.device('cuda'), save_path, ax_channel_num, mode, step, init)
         end = time.perf_counter()
         print(f"Generation done, consuming {(end-start)}s.")
         

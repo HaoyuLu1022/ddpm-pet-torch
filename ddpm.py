@@ -267,14 +267,16 @@ class Diffusion(object):
         
         fulldose.tofile(img_path)
 
-    def show_result_3d_loop(self, device, result_dir, guide_channels, mode='ddim', ddim_step=25):
+    def show_result_3d_loop(self, batch_size, device, result_dir, guide_channels, mode='ddim', step=25, init=None):
         img_shape = (256, 256, 256)
         target_shape = (128, 128, 128)
         files = "test_lines.txt"
         scale = 1e4
         with open(files) as f:
             lines = f.readlines()
-        for line in lines:
+        # for line in lines:
+        for l in range(39, 41):
+            line = lines[l]
             full_dir, low_dir = line.split()
             idx = full_dir[74:-8]
             #full_dir = '/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/haoyu/cropped/fulldose/fulldoseP-67292.img'
@@ -300,14 +302,17 @@ class Diffusion(object):
             fulldose = []
             if mode == 'ddpm':
                 print("Generating images...")
-                for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
-                    fulldose.append(self.net.sample(1, device, ax_feature=low_img_neighbor_slices[i], use_ema=False).squeeze(0, 1))
+                for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
+                    fulldose.append(self.net.sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), use_ema=False, init=init).squeeze(0, 1))
             elif mode == 'ddim': 
                 # ddim_step = int(input('Input your sampling step for DDIM (default to 25): '))
                 print("Generating images...")
-                for i in tqdm(range(0, len(low_img_neighbor_slices)), total=len(low_img_neighbor_slices)):
-                    fulldose.append(self.net.ddim_sample(1, device, ax_feature=low_img_neighbor_slices[i], ddim_step=ddim_step, eta=0, use_ema=False, simple_var=False).squeeze(0, 1))
-            fulldose = torch.stack(fulldose, dim=0)
+                for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
+                    fulldose.append(self.net.ddim_sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), ddim_step=step, eta=0, use_ema=False, simple_var=False, init=init).squeeze(0, 1))
+            elif mode == 'dpm':
+                for i in tqdm(range(0, len(low_img_neighbor_slices), batch_size)):
+                    fulldose.append(self.net.dpm_sample(batch_size, device, ax_feature=torch.cat(low_img_neighbor_slices[i:(i+batch_size)], dim=0), dpm_step=step, init=init).squeeze(0, 1))
+            fulldose = torch.cat(fulldose, dim=0)
             fulldose = postprocess_output(fulldose.cpu().data.numpy())
             fulldose = ndimage.zoom(fulldose, [shape/target_shape for target_shape, shape in zip(target_shape, full_img.shape)])
 
@@ -320,6 +325,15 @@ class Diffusion(object):
 
             if not os.path.exists(result_dir):
                 os.makedirs(result_dir)
-            img_path = f"{result_dir}/{mode}_{ddim_step}_{idx}_results.img" if mode == 'ddim' else f"{result_dir}/{mode}_{idx}_results.img"
+            if mode != "ddpm": 
+                if not os.path.exists(f"{result_dir}/{mode}_{step}"): 
+                    os.makedirs(f"{result_dir}/{mode}_{step}")
+                img_path = f"{result_dir}/{mode}_{step}/{idx}_results.img"
+            elif mode == "ddpm":
+                if not os.path.exists(f"{result_dir}/{mode}"):
+                    os.makedirs(f"{result_dir}/{mode}")
+                img_path = f"{result_dir}/{mode}/{idx}_results.img"
+
+            # img_path = f"{result_dir}/{mode}_{step}_{idx}_results.img" if mode == 'ddim' else f"{result_dir}/{mode}_{idx}_results.img"
             
             fulldose.tofile(img_path)
