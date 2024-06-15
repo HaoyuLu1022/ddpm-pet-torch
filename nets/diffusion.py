@@ -2,6 +2,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from tqdm import tqdm
+import math
+from fastprogress import progress_bar
 
 from functools import partial
 from copy import deepcopy
@@ -45,7 +48,7 @@ class GaussianDiffusion(nn.Module):
         self.num_classes    = num_classes
 
         # l1或者l2损失
-        if loss_type not in ["l1", "l2"]:
+        if loss_type not in ["l1", "l2", "rlhf"]:
             raise ValueError("__init__() got unknown loss type")
 
         self.loss_type      = loss_type
@@ -159,6 +162,81 @@ class GaussianDiffusion(nn.Module):
 
         return x.cpu().detach()
 
+    def calculate_log_probs(self, prev_sample, prev_sample_mean, std_dev_t):
+        std_dev_t = torch.clip(std_dev_t, 1e-6)
+        log_probs = -((prev_sample.detach() - prev_sample_mean) ** 2) / (2 * std_dev_t ** 2) - torch.log(std_dev_t) - math.log(math.sqrt(2 * math.pi))
+        return log_probs
+
+    @torch.no_grad()
+    def ddim_sample_rlhf(self, batch_size, device, y=None, use_ema=False, ax_feature=None, ddim_step=25, eta=0, simple_var=False):
+        if y is not None and batch_size != len(y):
+            raise ValueError("sample batch size different from length of given y")
+        
+        x = torch.randn(batch_size, self.img_channels, *self.img_size, device=device)
+        ts = torch.linspace(self.num_timesteps, 0, (ddim_step+1)).to(device).to(torch.long)
+
+        all_x = [x]
+        log_probs = []
+        
+        for t in range(1, ddim_step+1):
+            cur_t = ts[t-1] - 1
+            prev_t = ts[t] - 1
+            t_batch = torch.tensor([cur_t], device=device).repeat(batch_size)
+
+            model = self.ema_model if use_ema else self.model
+            eps = model(x, t_batch, y, ax_feature)
+
+            alpha_bar = self.alphas_cumprod[cur_t]
+            alpha_bar_prev = self.alphas_cumprod[prev_t] if prev_t >= 0 else 1
+
+            noise = torch.rand_like(x)
+            var = (1 - alpha_bar_prev) / (1 - alpha_bar) * (1 - alpha_bar / alpha_bar_prev)
+            first = torch.sqrt(alpha_bar_prev / alpha_bar) * x
+            second = (torch.sqrt(1 - alpha_bar_prev - eta * var) - torch.sqrt(alpha_bar_prev * (1 - alpha_bar) / alpha_bar)) * eps
+            third = torch.sqrt(1 - alpha_bar / alpha_bar_prev) * noise if simple_var else torch.sqrt(eta * var) * noise
+
+            x_mean = first + second 
+            x = x_mean + third
+            log_probs.append(self.calculate_log_probs(x, x_mean, eta*torch.sqrt(var)).mean(dim=tuple(range(1, x_mean.ndim))))
+            all_x.append(x)
+
+        return x, torch.stack(all_x), torch.stack(log_probs)
+    
+    def rlhf_loss(self, batch_size, x_t, original_log_probs, advantages, clip_advantages, clip_ratio, ax_feature, num_inference_steps, eta, device, y=None, use_ema=True, simple_var=False):
+        loss_value = 0.
+        ts = torch.linspace(self.num_timesteps, 0, (num_inference_steps+1)).to(device).to(torch.long)
+        for i, t in enumerate(range(num_inference_steps)):
+            clipped_advantages = torch.clip(advantages, -clip_advantages, clip_advantages).detach()
+
+            cur_t = ts[t-1] - 1
+            prev_t = ts[t] - 1
+            t_batch = torch.tensor([cur_t], device=device).repeat(batch_size)
+
+            model = self.ema_model if use_ema else self.model
+            eps = model(x_t[i], t_batch, y, ax_feature)
+
+            alpha_bar = self.alphas_cumprod[cur_t]
+            alpha_bar_prev = self.alphas_cumprod[prev_t] if prev_t >= 0 else 1
+
+            # noise = torch.rand_like(x_t[i])
+            var = (1 - alpha_bar_prev) / (1 - alpha_bar) * (1 - alpha_bar / alpha_bar_prev)
+            first = torch.sqrt(alpha_bar_prev / alpha_bar) * x_t[i]
+            second = (torch.sqrt(1 - alpha_bar_prev - eta * var) - torch.sqrt(alpha_bar_prev * (1 - alpha_bar) / alpha_bar)) * eps
+            # third = torch.sqrt(1 - alpha_bar / alpha_bar_prev) * noise if simple_var else torch.sqrt(eta * var) * noise
+
+            x_mean = first + second 
+            # x = x_mean + third
+            current_log_probs = self.calculate_log_probs(x_t[i+1].detach(), x_mean, eta * torch.sqrt(var)).mean(dim=tuple(range(1, x_mean.ndim)))
+
+            ratio = torch.exp(current_log_probs - original_log_probs[i].detach())
+            unclipped_loss = -clip_advantages * ratio
+            clipped_loss = -clipped_advantages * torch.clip(ratio, 1. - clip_ratio, 1. + clip_ratio)
+            loss = torch.max(unclipped_loss, clipped_loss).mean()
+            loss.backward()
+
+            loss_value += loss.item()
+        return loss_value
+
     def perturb_x(self, x, t, noise):
         return (
             extract(self.sqrt_alphas_cumprod, t,  x.shape) * x +
@@ -178,17 +256,19 @@ class GaussianDiffusion(nn.Module):
             loss = F.mse_loss(estimated_noise, noise)
         return loss
 
-    def forward(self, x, y=None, ax_feature=None):
+    def forward(self, x, y=None, ax_feature=None, all_step_preds=None, log_probs=None, advantages=None, clip_advantages=None, clip_ratio=None, all_prompts=None, num_infer_step=None, eta=None):
         b, c, h, w  = x.shape
         device      = x.device
-
-        if h != self.img_size[0]:
-            raise ValueError("image height does not match diffusion parameters")
-        if w != self.img_size[0]:
-            raise ValueError("image width does not match diffusion parameters")
-        
-        t = torch.randint(0, self.num_timesteps, (b,), device=device)
-        return self.get_losses(x, t, y, ax_feature)
+        if self.loss_type == 'rlhf':
+            return self.rlhf_loss(b, all_step_preds, log_probs, advantages, clip_advantages, clip_ratio, all_prompts, num_infer_step, eta, device)
+        else: 
+            if h != self.img_size[0]:
+                raise ValueError("image height does not match diffusion parameters")
+            if w != self.img_size[0]:
+                raise ValueError("image width does not match diffusion parameters")
+            
+            t = torch.randint(0, self.num_timesteps, (b,), device=device)
+            return self.get_losses(x, t, y, ax_feature)
 
 def generate_cosine_schedule(T, s=0.008):
     def f(t, T):

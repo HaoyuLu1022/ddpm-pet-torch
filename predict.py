@@ -14,7 +14,7 @@ from ddpm import Diffusion
 from utils.utils import preprocess_input
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-ax_channel_num = 1
+ax_channel_num = 32
 
 if __name__ == "__main__":
     model_path = input("Please specify the model weight directory: ")

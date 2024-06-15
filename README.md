@@ -1,6 +1,8 @@
-## DDPM: Denoising Diffusion Probabilistic Models模型在pytorch当中的实现
+## DDPM-PET-torch：使用2维DDPM对3维低剂量PET图像降噪
 ---
-> Forked from https://github.com/bubbliiiing/ddpm-pytorch. 
+> Forked from https://github.com/bubbliiiing/ddpm-pytorch（DDPM: Denoising Diffusion Probabilistic Models模型在pytorch当中的实现）. 
+>
+> rlhf分支是引入DDPO后的尝试代码。由于训练设备显存有限，无法有效地印证该方法是否能提升模型表现，因此作为一个“开发中”的版本，仅供参考。该版本尚不支持多卡并行。
 
 ### 目录
 1. [所需环境 Environment](#所需环境)
@@ -10,12 +12,10 @@
 6. [参考资料 Reference](#Reference)
 
 ## 所需环境
-pytorch==1.7.0 
-pytorch==1.2.0无法在windows下载入2G以上的权重，无法正常使用，不推荐。
+参考`env.yaml`文件。pytorch尽量选择2.0以上版本
 
 ## 文件下载
-为了验证模型的有效性，我使用了**花的例子**进行了训练。    
-训练好的生成器模型[Diffusion_Flower.pth](https://github.com/bubbliiiing/ddpm-pytorch/releases/download/v1.0/Diffusion_Flower.pth)可以通过百度网盘下载或者通过GITHUB下载    
+为了验证模型的有效性，原repo使用了**花的例子**进行了预训练。训练好的生成器模型[Diffusion_Flower.pth](https://github.com/bubbliiiing/ddpm-pytorch/releases/download/v1.0/Diffusion_Flower.pth)可以通过百度网盘下载或者通过GITHUB下载    
 权值的百度网盘地址如下：    
 链接: https://pan.baidu.com/s/1AI5jB0OPYbLGAX4JLbotXA 提取码: kbtp     
 
@@ -23,11 +23,8 @@ pytorch==1.2.0无法在windows下载入2G以上的权重，无法正常使用，
 链接: https://pan.baidu.com/s/1ITA1Lw_K28B3nbNPnI3_Kw 提取码: 11yt  
 
 ## 预测步骤
-### a、使用预训练权重
-1. 下载完库后解压，直接运行predict.py，在终端点击enter，即可生成图片，生成图片位于results/predict_out/predict_1x1_results.png，results/predict_out/predict_5x5_results.png。    
-### b、使用自己训练的权重 
 1. 按照训练步骤训练。    
-2. 在dcgan.py文件里面，在如下部分修改model_path使其对应训练好的文件；**model_path对应logs文件夹下面的权值文件**。    
+2. 在`ddpm.py`文件里，在如下部分修改model_path使其对应训练好的文件；也可以在`predict.py`里，创建`diffusion`对象时传入指定`model_path`。**model_path对应logs文件夹下面的权值文件**。    
 ```python
 _defaults = {
     #-----------------------------------------------#
@@ -56,9 +53,19 @@ _defaults = {
     "cuda"              : True,
 }
 ```
-3. 运行predict.py，在终端点击enter，即可生成图片，生成图片位于results/predict_out/predict_1x1_results.png，results/predict_out/predict_5x5_results.png。    
+```python
+ddpm = Diffusion(model_path=model_path, guide_channels=ax_channel_num, loss_type="l2")
+```
+
+3. 运行`predict.py`，终端会询问`model_path`、生成模式（DDPM、DDIM或DPM-Solver）、采样步数（针对DDIM和DPM-Solver）；输入后即可生成对应3维图像[^1]，存储在`results/predict_out`路径下。
+
 
 ## 训练步骤
-1. 训练前将期望生成的图片文件放在datasets文件夹下（参考花的数据集）。  
-2. 运行根目录下面的txt_annotation.py，生成train_lines.txt，保证train_lines.txt内部是有文件路径内容的。  
-3. 运行train.py文件进行训练，训练过程中生成的图片可查看results/train_out文件夹下的图片。  
+1. 准备好lowdose和fulldose的3维图像数据集  
+2. 在`txt_annotation.py`中填写数据集路径并运行，生成`train_lines.txt`，确保`train_lines.txt`内部是有文件路径内容的。  
+3. 在`preprocess_slice.py`中修改作为条件的邻近切片数量（默认为32），指定切片存储路径，后运行即可得到切片后的数据集
+4. 在`slice_annotation.py`中修改切片数据集路径并运行，生成`train_slices.txt`，确保`train_slices.txt`内部是有文件路径内容的。  
+5. 运行`train.py`文件进行训练，训练过程中生成的图片可查看`results/loss_<对应训练时间>/train_out`文件夹下的图片（推荐只用于观察是否能生成正确图片，而不用于模型质量评估；质量评估尽量使用上述`predict.py`测试流程）。  
+
+[^1]: 本项目开发时为了方便，默认对`test_lines.txt`中第一个路径对应的低剂量图像进行降噪。若有需要可以自行实现指定低剂量图像路径功能；或使用`ddpm.py`中的`show_result_3d_loop`函数，遍历所有`test_lines.txt`中的低剂量图像。
+

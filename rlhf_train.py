@@ -1,26 +1,37 @@
-import datetime
 import os
-
-import numpy as np
+import datetime
 import torch
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.optim as optim
 from torch.utils.data import DataLoader
+import numpy as np
+from tqdm import tqdm
 import scipy.ndimage as ndimage
 from numpy.lib.stride_tricks import sliding_window_view
 import math
+from fastprogress import master_bar, progress_bar
 
 from nets import (GaussianDiffusion, UNet, generate_cosine_schedule,
                   generate_linear_schedule)
 from utils.callbacks import LossHistory
 from utils.dataloader import Diffusion_dataset_collate, DiffusionDataset
-from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config, preprocess_input
+from utils.utils import get_lr_scheduler, set_optimizer_lr, show_config, preprocess_input, sample_and_calculate_rewards, show_result, get_lr
 from utils.utils_fit import fit_one_epoch
+from utils.tracker import PerPromptStatTracker
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-# os.environ['NVIDIA_P2P_DISABLE'] = '1'
-# os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:5120"
+os.environ['CUDA_VISIBLE_DEVICES'] = '0, 5, 6, 7'
+
+num_samples_per_epoch = 128
+Epoch = 50
+num_inner_epochs = 1
+# num_timesteps = 50
+batch_size = 6
+# img_size = 512
+# lr = 5e-6
+clip_advantages = 10.0
+clip_ratio = 1e-4
+# cfg = 5.0
 
 scale = 1e4
 
@@ -54,7 +65,7 @@ if __name__ == "__main__":
     #   此处使用的是整个模型的权重，因此是在train.py进行加载的。
     #   如果想要让模型从0开始训练，则设置model_path = ''。
     #---------------------------------------------------------------------#
-    diffusion_model_path    = "model_weights/Diffusion_Flower_mod.pth" # "../ddpm-pet-torch-logs/loss_2024_03_10_23_42_17/Diffusion_Epoch500-GLoss0.0018.pth"
+    diffusion_model_path    = "logs/Diffusion_Epoch35-GLoss10.1956.pth"
     #---------------------------------------------------------------------#
     #   卷积通道数的设置，显存不够时可以降低，如64
     #---------------------------------------------------------------------#
@@ -76,9 +87,9 @@ if __name__ == "__main__":
     #------------------------------#
     #   训练参数设置
     #------------------------------#
-    Init_Epoch      = 0
-    Epoch           = 300
-    batch_size      = 6
+    Init_Epoch      = 35
+    # Epoch           = 300
+    # batch_size      = 6
     
     #------------------------------------------------------------------#
     #   其它训练参数：学习率、优化器、学习率下降有关
@@ -105,17 +116,18 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   save_period     多少个epoch保存一次权值
     #------------------------------------------------------------------#
-    save_period         = 5 
+    save_period         = 5
     #------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     #------------------------------------------------------------------#
     save_dir            = 'logs'
+    # reward_dir = 'rewards'
     #------------------------------------------------------------------#
     #   num_workers     用于设置是否使用多线程读取数据
     #                   开启后会加快数据读取速度，但是会占用更多内存
     #                   内存较小的电脑可以设置为2或者0  
     #------------------------------------------------------------------#
-    num_workers         = 10
+    num_workers         = 14
     
     #------------------------------------------#
     #   获得图片路径
@@ -149,8 +161,8 @@ if __name__ == "__main__":
     #------------------------------------------#
     #   Diffusion网络
     #------------------------------------------#
-    ax_channel_num = 1
-    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=ax_channel_num, base_channels=channel), model_input_shape, 1, betas=betas)
+    ax_channel_num = 32
+    diffusion_model = GaussianDiffusion(UNet(img_channels=1, condition=True, guide_channels=ax_channel_num, base_channels=channel), model_input_shape, 1, betas=betas, loss_type='rlhf')
     # 灰阶图像通道数和预训练模型通道数不一致，通常有两种解决方案
     # 1. 同一(400, 400, 1)切片输入，复制三份形成(400, 400, 3)传入
     # 2. 对模型的第一层各通道参数进行均值操作 <- 
@@ -210,6 +222,7 @@ if __name__ == "__main__":
     time_str        = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
     log_dir         = os.path.join(save_dir, "loss_" + str(time_str))
     loss_history    = LossHistory(log_dir, [diffusion_model], input_shape=model_input_shape)
+    # reward_history = LossHistory(os.path.join(reward_dir, f"reward_{str(time_str)}"), [diffusion_model], input_shape=model_input_shape)
     result_dir = f"results/train_out_{str(time_str)}"
     if not os.path.exists(result_dir):
         os.makedirs(result_dir) 
@@ -284,16 +297,100 @@ if __name__ == "__main__":
         }
 
         #---------------------------------------#
+        #   加载reward模型
+        #---------------------------------------#
+
+        from open_clip import create_model_from_pretrained, get_tokenizer
+        reward_model, preprocess = create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
+        tokenizer = get_tokenizer('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
+        reward_model.to(device)
+        reward_model.eval()
+
+        per_prompt_stat_tracker = PerPromptStatTracker(buffer_size=32, min_count=16)
+
+        #---------------------------------------#
         #   开始模型训练
         #---------------------------------------#
-        for epoch in range(Init_Epoch, Epoch):
+        mb = master_bar(range(Init_Epoch, Epoch))
+        for epoch in mb:
 
             if distributed:
                 train_sampler.set_epoch(epoch)
                 
             set_optimizer_lr(optimizer, lr_scheduler_func, epoch)
             
-            fit_one_epoch(diffusion_model_train, diffusion_model, loss_history, optimizer, epoch, epoch_step, gen, Epoch, Cuda, fp16, scaler, save_period, log_dir, result_dir, test_slices_dict, local_rank)
+            all_step_preds, log_probs, advantages, all_prompts, all_rewards = [], [], [], [], []
+            total_loss = 0
+
+            if local_rank == 0:
+                print('Start Train')
+                # pbar = tqdm(total=epoch_step,desc=f'Epoch {epoch + 1}/{Epoch}',postfix=dict,mininterval=0.3)
+            
+            cb = enumerate(progress_bar(gen, parent=mb))
+            for iteration, imgs in cb:
+                # full_imgs = imgs["fulldose"]
+                low_imgs = imgs["lowdose"]
+                if iteration >= epoch_step:
+                    break
+                with torch.no_grad():
+                    if Cuda:
+                        # full_imgs = full_imgs.cuda(local_rank)
+                        low_imgs = low_imgs.cuda(local_rank)
+                batch_imgs, rewards, batch_all_step_preds, batch_log_probs = sample_and_calculate_rewards(batch_size, low_imgs, diffusion_model_train.module.to(torch.device("cuda:0")), reward_model, tokenizer, torch.device("cuda:0"))
+                batch_advantages = torch.from_numpy(per_prompt_stat_tracker.update(low_imgs.cpu().numpy(), rewards.cpu().detach().squeeze().numpy())).float().to(device)
+                all_step_preds.append(batch_all_step_preds.cpu())
+                log_probs.append(batch_log_probs.cpu())
+                advantages.append(batch_advantages.cpu())
+                all_prompts.append(low_imgs.cpu())
+                all_rewards.append(rewards.cpu())
+            
+            all_step_preds_chunked = torch.stack(all_step_preds)
+            log_probs_chunked = torch.stack(log_probs)
+            advantages_chunked = torch.stack(advantages)
+            all_prompts_chunked = torch.stack(all_prompts)
+            all_rewards_chunked = torch.stack(all_rewards)
+
+            for inner_epoch in progress_bar(range(num_inner_epochs)):
+                pbar = tqdm(total=epoch_step,desc=f'Epoch {epoch + 1}/{Epoch}',postfix=dict,mininterval=0.3)
+                for i in range(len(all_step_preds_chunked)):
+                    optimizer.zero_grad()
+
+                    loss = diffusion_model_train(low_imgs, all_step_preds=all_step_preds_chunked[i].to(device), log_probs=log_probs_chunked[i].to(device), advantages=advantages_chunked[i].to(device), clip_advantages=clip_advantages, clip_ratio=clip_ratio, all_prompts=all_prompts_chunked[i].to(device), num_infer_steps=25, eta=1) # loss.backward happens inside
+                    torch.nn.utils.clip_grad_norm_(diffusion_model_train.parameters(), 1.0) # gradient clipping
+                    optimizer.step()
+                    total_loss += loss
+
+                    diffusion_model.update_ema()
+
+                    if local_rank == 0:
+                        pbar.set_postfix(**{'total_loss'    : total_loss / (iteration + 1),  
+                                            'lr'            : get_lr(optimizer)})
+                        pbar.update(1)
+                print()
+            total_loss /= epoch_step
+
+            if local_rank == 0:
+                pbar.close()
+                print('Epoch:'+ str(epoch + 1) + '/' + str(Epoch))
+                print('Total_loss: %.4f ' % (total_loss))
+                print(f'Reward: {torch.sum(torch.cat(all_rewards)).item()}')
+                loss_history.append_loss(epoch + 1, total_loss = total_loss, reward=torch.sum(torch.cat(all_rewards)).item())
+                # reward_history.append_loss(epoch+1, reward=np.sum(all_rewards.detach().numpy()))
+                
+                #----------------------------#
+                #   每若干个世代保存一次
+                #----------------------------#
+                if (epoch + 1) % save_period == 0 or epoch + 1 == Epoch:
+                    test_full = test_slices_dict["fulldose"]
+                    test_low = test_slices_dict["lowdose"]
+                    with torch.no_grad():
+                        test_low = test_low.cuda(local_rank)
+                    print('Show_result:')
+                    show_result(epoch + 1, diffusion_model, test_low.device, result_dir, test_full, ax_feature=test_low)
+                    
+                    torch.save(diffusion_model.state_dict(), os.path.join(save_dir, 'Diffusion_Epoch%d-GLoss%.4f.pth'%(epoch + 1, total_loss)))
+                    
+                torch.save(diffusion_model.state_dict(), os.path.join(save_dir, "diffusion_model_last_epoch_weights.pth"))
 
             if distributed:
                 dist.barrier()

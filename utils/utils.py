@@ -10,6 +10,7 @@ from typing import Tuple, List
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity, normalized_root_mse
 from skimage.exposure import rescale_intensity
 from prettytable import PrettyTable
+import torch.nn.functional as F
 
 maxn = 0.004
 scale = 1e4
@@ -51,13 +52,13 @@ def postprocess_output(x):
     return x
 
 def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
-    test_images = [net.ddim_sample(1, device, ax_feature=ax_feature[i], use_ema=False, ddim_step=25, eta=0, simple_var=False).squeeze(0) for i in range(len(ax_feature))]
+    test_images = [net.ddim_sample(1, device, ax_feature=ax_feature[i].unsqueeze(0), use_ema=False, ddim_step=25, eta=0, simple_var=False).squeeze(0) for i in range(len(ax_feature))]
 
     size_figure_grid_r = 3
     size_figure_grid_c = 4
     fig, ax = plt.subplots(size_figure_grid_r, size_figure_grid_c, figsize=(10, 10), constrained_layout=True)
     low_imgs = [
-        postprocess_output(np.expand_dims((ax_feature[i][0][ax_feature.shape[1]//2]).cpu().data.numpy(), axis=0)) for i in range(ax_feature.shape[0])]
+        postprocess_output((ax_feature[i][ax_feature.shape[1]//2]).cpu().data.numpy()) for i in range(ax_feature.shape[0])]
     predict_images = [
         postprocess_output(test_images[i].cpu().data.numpy()) for i in range(size_figure_grid_c)
     ]
@@ -74,10 +75,10 @@ def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
         # i = k // size_figure_grid_c
         # j = k % size_figure_grid_c
         ax[1, k].cla()
-        ax[1, k].imshow(predict_images[k], cmap='gray', origin='lower')
+        ax[1, k].imshow(predict_images[k][0], cmap='gray', origin='lower')
     for k in range(size_figure_grid_c): 
         ax[2, k].cla()
-        ax[2, k].imshow(gt_images[k], cmap='gray', origin='lower')
+        ax[2, k].imshow(gt_images[k][0], cmap='gray', origin='lower')
     
     table = PrettyTable(['Metrics', '1st slice', '2nd slice', '3rd slice', '4th slice'])
     psnr = []
@@ -85,7 +86,7 @@ def show_result(num_epoch, net, device, result_dir, gt, ax_feature=None):
     nrmse = []
     for i in range(size_figure_grid_c): 
         psnr.append(peak_signal_noise_ratio(predict_images[i], gt_images[i], data_range=2*maxn*scale)) 
-        ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=2*maxn*scale, channel_axis=2))
+        ssim.append(structural_similarity(predict_images[i], gt_images[i], data_range=2*maxn*scale, channel_axis=0))
         nrmse.append(normalized_root_mse(rescale_intensity(predict_images[i]), rescale_intensity(gt_images[i]), normalization='euclidean'))
     table.add_row(['PSNR', f"{psnr[0]:.3f}", f"{psnr[1]:.3f}", f"{psnr[2]:.3f}", f"{psnr[3]:.3f}"])
     table.add_row(['SSIM', f"{ssim[0]:.3f}", f"{ssim[1]:.3f}", f"{ssim[2]:.3f}", f"{ssim[3]:.3f}"])
@@ -159,3 +160,25 @@ def set_optimizer_lr(optimizer, lr_scheduler_func, epoch):
     lr = lr_scheduler_func(epoch)
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
+
+def reward_fn(imgs, reward_model, tokenizer, device): 
+    context_len = 256
+    template = 'This is a PET image of '
+    labels = [
+        'synthesized fulldose',
+        'original fulldose'
+    ]
+    txts = tokenizer([template + l for l in labels], context_length=context_len).to(device)
+
+    with torch.no_grad():
+        # for idx in range(len(imgs)): 
+        ddim_25_slice = torch.Tensor(F.interpolate(imgs, (224, 224), mode='bicubic')).repeat(1, 3, 1, 1).to(device)
+        image_features, text_features, logit_scale = reward_model(ddim_25_slice, txts)
+
+        logits = (logit_scale * image_features @ text_features.t()).detach().softmax(dim=-1)
+    return torch.stack([logits[i][1] for i in range(len(imgs))])
+
+def sample_and_calculate_rewards(batch_size, ax_feature, diffusion_model, reward_model, tokenizer, device, ddim_step=25, eta=0, simple_var=False, use_ema=False): 
+    preds, all_step_preds, log_probs = diffusion_model.ddim_sample_rlhf(batch_size, device, ax_feature=ax_feature, ddim_step=ddim_step, eta=eta, simple_var=simple_var, use_ema=use_ema)
+    rewards = reward_fn(imgs=preds, reward_model=reward_model, tokenizer=tokenizer, device=device)
+    return preds, rewards, all_step_preds, log_probs

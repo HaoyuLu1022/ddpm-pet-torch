@@ -5,8 +5,8 @@ from sklearn.model_selection import train_test_split
 #   指向数据集所在的文件夹
 #   默认指向根目录下的datasets
 #---------------------------------#
-full_path = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_fulldose_1111"
-low_path = "/media/bld/e644a83d-65c3-4f55-a408-bea0bee7f43e/huaijia/IMG_lowdose_1111"
+full_path = "../../huaijia/IMG_fulldose_1111"
+low_path = "../../chenxi/IMG_lowdose_12s_1111"
 
 if __name__ == "__main__":
     train_file = open('train_lines.txt', 'w')
