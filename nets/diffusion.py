@@ -161,7 +161,7 @@ class GaussianDiffusion(nn.Module):
             alpha_bar = self.alphas_cumprod[cur_t]
             alpha_bar_prev = self.alphas_cumprod[prev_t] if prev_t >= 0 else 1
 
-            noise = torch.rand_like(x)
+            noise = torch.randn_like(x)
             var = eta * (1 - alpha_bar_prev) / (1 - alpha_bar) * (1 - alpha_bar / alpha_bar_prev)
             first = torch.sqrt(alpha_bar_prev / alpha_bar) * x
             second = (torch.sqrt(1 - alpha_bar_prev - var) - torch.sqrt(alpha_bar_prev * (1 - alpha_bar) / alpha_bar)) * eps
@@ -207,7 +207,7 @@ class GaussianDiffusion(nn.Module):
             alpha_bar = self.alphas_cumprod[cur_t]
             alpha_bar_prev = self.alphas_cumprod[prev_t] if prev_t >= 0 else 1
 
-            noise = torch.rand_like(x)
+            noise = torch.randn_like(x)
             var = eta * (1 - alpha_bar_prev) / (1 - alpha_bar) * (1 - alpha_bar / alpha_bar_prev)
             first = torch.sqrt(alpha_bar_prev / alpha_bar) * x
             second = (torch.sqrt(1 - alpha_bar_prev - var) - torch.sqrt(alpha_bar_prev * (1 - alpha_bar) / alpha_bar)) * eps
